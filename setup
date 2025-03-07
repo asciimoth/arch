@@ -1,0 +1,158 @@
+#!/bin/bash
+set -o noclobber -o noglob -o nounset
+
+TABSIZE="  "
+
+SHOULD_REBOOT=""
+
+CONFIGPATH="$(dirname "$(realpath "$0")")"
+echo "Path to config: $CONFIGPATH"
+
+function symlink() {
+	LSRC="$1"
+	LDST="$2"
+	local TAB="$3"
+	echo "$TAB$LDST -> <config>/$LSRC"
+	if [ -e "$LDST" ] && [ ! -L "$LDST" ]; then
+		echo "$TAB$TABSIZE""creating backup $LDST -> $LDST.backup"
+		sudo mv "$LDST" "$LDST.backup"
+	fi
+	rm -rf "$LDST"
+	mkdir -p "$LDST"
+	rm -rf "$LDST"
+	LSRC="$CONFIGPATH/$LSRC"
+	ln -sf "$LSRC" "$LDST"
+}
+
+function setlinks() {
+	local TAB="$1"
+	echo "$TAB[Creating symlinks]"
+	mkdir -p "$HOME/.config"
+	while read -r line; do
+	    [[ "$line" == "#"* ]] && continue
+		[[ "$line" == "" ]] && continue
+		LDST=$(echo "$line" | awk -F'->' '{print $1}' | xargs)
+		LSRC=$(echo "$line" | awk -F'->' '{print $2}' | xargs)
+		LDST="$(eval echo "$LDST")"
+		symlink "$LSRC" "$LDST" "$TAB$TABSIZE"
+	done < "$CONFIGPATH/symlinks"
+}
+
+function setlocales() {
+	local TAB="$1"
+	echo "$TAB[Setting up locales]"
+	if cmp -s "/etc/locale.gen" "$CONFIGPATH/locale.gen"; then
+		echo "$TAB$TABSIZE""/etc/locale.gen is up to date"
+	else
+		echo "$TAB$TABSIZE""Copyng <config>/locale.gen -> /etc/locale.gen"
+		sudo cp "$CONFIGPATH/locale.gen" "/etc/locale.gen"
+		echo "$TAB$TABSIZE""Generate locales"
+		sudo locale-gen
+		SHOULD_REBOOT=true
+	fi
+	if cmp -s "/etc/locale.conf" "$CONFIGPATH/locale.conf"; then
+		echo "$TAB$TABSIZE""/etc/locale.conf is up to date"
+	else
+		echo "$TAB$TABSIZE""Copyng <config>/locale.conf -> /etc/locale.conf"
+		sudo cp "$CONFIGPATH/locale.conf" "/etc/locale.conf"
+		SHOULD_REBOOT=true
+	fi
+}
+
+function setx() {
+	local TAB="$1"
+	echo "$TAB[Setting up Xorg]"
+	sudo mkdir -p /etc/X11/xorg.conf.d
+	sudo chmod 755 /etc/X11 /etc/X11/xorg.conf.d
+	while IFS= read -r file; do
+		SOURCE="$CONFIGPATH/xorg/$file"
+		DESTIN="/etc/X11/xorg.conf.d/10-$file"
+		[ -d "$SOURCE" ] && continue
+		echo "$TAB$TABSIZE cp <config>/xor/$file -> $DESTIN"
+		sudo cp "$SOURCE" "$DESTIN"
+	done <<< "$(ls "$CONFIGPATH/xorg")"
+}
+
+function setbash() {
+	local TAB="$1"
+	echo "$TAB[Setting up bash configs]"
+	STARTXCMD='[[ $(tty) == /dev/tty1 ]] && exec startx'
+	if grep -F -q "$STARTXCMD" ~/.bash_profile; then
+		echo "$TAB$TABSIZE"".bash_profile already up to date"
+	else
+		echo "$TAB$TABSIZE""Adding startx >> .bash_profile"
+		echo "$STARTXCMD" >> ~/.bash_profile
+	fi
+	LOADBRCCMD=". $CONFIGPATH/bashrc"
+	if grep -F -q "$LOADBRCCMD" ~/.bashrc; then
+		echo "$TAB$TABSIZE"".bashrc already up to date"
+	else
+		echo "$TAB$TABSIZE""Adding hook to .bashrc"
+		echo "$LOADBRCCMD" >> ~/.bashrc
+	fi
+}
+
+function setgpg() {
+	local TAB="$1"
+	echo "$TAB[Setting up GnuPG]"
+	gpg --import "$CONFIGPATH/keys/"*
+}
+
+function installpkgs() {
+	local TAB="$1"
+	echo "$TAB[Installing packages]"
+	sudo pacman -S --noconfirm --needed $(sed '/^[[:blank:]]*#/d;s/#.*//' $CONFIGPATH/pkgs | awk '{print $1}')
+}
+
+function setflatpak() {
+	local TAB="$1"
+	echo "$TAB[Setting up flatpak]"
+	sudo mkdir -p /flatpak-aliases
+	sudo chmod 755 /flatpak-aliases
+	while IFS= read -r fltp; do
+		read -r repo pkg als <<< "$fltp"
+		sudo flatpak install -y "$repo" "$pkg"
+		if [[ "$als" != "" ]]; then
+			local FL_CMD="flatpak run $pkg "'$@'
+			echo "$TAB$TABSIZE""Creagting alias script $als -> $FL_CMD"
+			sudo rm -rf "/flatpak-aliases/$als"
+			echo "$FL_CMD" | sudo tee -a "/flatpak-aliases/$als"
+			sudo chmod 755 "/flatpak-aliases/$als"
+		fi
+	done <<< "$(sed '/^[[:blank:]]*#/d;s/#.*//' $CONFIGPATH/flatpak/installs)"
+	sudo flatpak update -y
+}
+
+# TODO
+#function setservices() {
+#	local TAB="$1"
+#	echo "$TAB[Enabling/disabling sysd services]"
+#}
+
+function setxdg() {
+	local TAB="$1"
+	echo "$TAB[Setting up XDG stuff]"
+	xdg-mime default browsers.desktop x-scheme-handler/http
+	xdg-mime default browsers.desktop x-scheme-handler/https
+	xdg-mime default browsers.desktop x-scheme-handler/ws
+	xdg-mime default browsers.desktop x-scheme-handler/wss
+}
+
+function cond_reboot() {
+	[[ $SHOULD_REBOOT != true ]] && return
+	echo "!! There are some changes that requre reboot !!"
+}
+
+setlocales ""
+setlinks ""
+setx ""
+setbash ""
+installpkgs ""
+setgpg ""
+setflatpak ""
+setxdg ""
+#setservices ""
+# TODO: setup sudoers
+# TODO: fix files permissions
+
+cond_reboot

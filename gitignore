@@ -1,0 +1,23 @@
+# Win executables
+*.exe
+
+# Local files
+local
+lcoal/
+
+# Env files
+env
+.env
+
+# SublimeText files
+.sublime-workspace
+.sublime-project
+*.sublime-workspace
+*.sublime-project
+*.sublime-workspace*
+*.sublime-project*
+
+#Vscode
+.vscode
+.codium
+.vscodium

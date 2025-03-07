@@ -1,0 +1,60 @@
+#!/bin/python3
+
+#echo "$@"
+
+#mkdir -p ~/.var/app/io.gitlab.librewolf-community/cache/librewolf/
+#ls ~/.var/app/io.gitlab.librewolf-community/cache/librewolf/
+
+#echo -e "A\nB\nC" | rofi -dmenu -p "Browser+profile"
+
+import sys
+import os
+import subprocess
+from pathlib import Path
+from functools import reduce
+
+WOLF="io.gitlab.librewolf-community"
+WOLF_PROFILES_DIR = Path(f"~/.var/app/{WOLF}/cache/librewolf/").expanduser()
+
+BANNED_OPTIONS = [
+	"lw default-default\n"
+]
+
+def scan_wolf():
+	return reduce(
+		lambda d, p: d | {
+			"lw "+p.split(".", 1)[1]:
+			["flatpak", "run", WOLF, "-P", p.split(".", 1)[1]]
+		},
+		os.listdir(WOLF_PROFILES_DIR),
+		dict()
+	)
+
+# TODO: Add chromium support
+def scan_chrome():
+	return {}
+
+def rofi(prompt, stdin):
+	cmd = ["rofi", "-dmenu", "-p", "prompt"]
+	res = subprocess.run(cmd, input=stdin.encode("utf-8"), capture_output=True)
+	if res.stdout:
+		return res.stdout.decode("utf-8").replace("\n", "")
+	return ""
+
+while True:
+	entries = scan_wolf() | scan_chrome()
+	options = reduce(lambda x, y: x+y+"\n", entries.keys(), "")+"new lw"
+	for bo in BANNED_OPTIONS:
+		options = options.replace(bo, "")
+	selection = rofi("Browser+profile", options)
+	if selection == "":
+		print("canceled by user")
+		break
+	elif selection == "new lw":
+		subprocess.run(["flatpak", "run", WOLF, "--ProfileManager"])
+	elif selection in entries:
+		cmd = entries[selection]
+		if len(sys.argv) > 1 and sys.argv[1]:
+			cmd += [sys.argv[1]]
+		subprocess.run(cmd)
+		break

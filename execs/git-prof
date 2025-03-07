@@ -1,0 +1,14 @@
+#!/bin/bash
+
+NAME="$1"
+PROFILES="$HOME/config/git-profiles"
+
+if [[ "$NAME" == "" ]]; then
+	ls "$PROFILES"
+	exit 0
+fi
+
+while IFS= read -r opt; do
+	CMD="git config $opt"
+	eval "$CMD"
+done <<< "$(cat "$PROFILES/$NAME")"

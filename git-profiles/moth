@@ -1,0 +1,5 @@
+user.name AsciiMoth
+user.email ascii@moth.contact
+user.signingkey C3A35C9F
+commit.gpgsign true
+tag.forceSignAnnotated true

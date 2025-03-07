@@ -1,0 +1,13 @@
+# User-global git configuration
+~/.gitconfig -> gitconfig
+
+# Awesome wm config
+~/.config/awesome -> awesome
+
+~/.local/share/applications/browsers.desktop -> execs/browsers.desktop
+~/.gnupg/gpg.conf -> gpg.conf
+~/.gnupg/gpg-agent.conf -> gpg-agent.conf
+
+~/.xinitrc -> xinitrc
+~/.config/git/ignore -> gitignore
+
