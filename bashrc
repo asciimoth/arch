@@ -34,6 +34,4 @@ alias dropproxy='export ALL_PROXY="" && export all_proxy="" && export SOCKS_PROX
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
-gpg-connect-agent updatestartuptty /bye
-
-#echo UPDATESTARTUPTTY | gpg-connect-agent > /dev/null
+gpg-connect-agent updatestartuptty /bye > /dev/null

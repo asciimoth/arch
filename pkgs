@@ -32,6 +32,9 @@ boxxy
 
 tailscale
 
+libnfs
+nfs-utils
+
 yubikey-manager
 yubikey-touch-detector
 
