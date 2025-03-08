@@ -35,3 +35,12 @@ export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 gpg-connect-agent updatestartuptty /bye > /dev/null
+
+tere() {
+	local result=$(command tere "$@")
+	[ -n "$result" ] && cd -- "$result"
+}
+
+function 2() {
+	tere
+}
