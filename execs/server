@@ -1,0 +1,74 @@
+#!/bin/bash
+
+SERVER_DOMAIN="pinas2"
+
+function help() {
+	echo "server [subcmd] [args]"
+	echo "subcommands:"
+	echo "  ping: ping server"
+	echo "  admin: start remote admin shell on server"
+	echo "  git: run git TUI or CLI interface"
+	echo "    server git"
+	echo "    server git help"
+	echo "  reboot: reboot server"
+	echo "  shutdown: shutdown server"
+	echo "  up: decrypt vault, do scrub, launch services"
+	echo "  mount: force mount local NFS share (/pinas2)"
+	echo "  unmount: force unmount local NFS share (/pinas2)"
+}
+
+function fping() {
+	while true
+	do
+		ping "$SERVER_DOMAIN" $@
+		sleep 1
+	done
+}
+
+function fadmin() {
+	ssh "admin@$SERVER_DOMAIN" $@
+}
+
+function fgit() {
+	ssh "git@$SERVER_DOMAIN" -p 3145 $@
+}
+
+function freboot() {
+	fadmin "sudo reboot now" $@
+}
+
+function fshutdown() {
+	fadmin "sudo shutdown now" $@
+}
+
+function fup() {
+	gpg --decrypt "$HOME/config/keys/pinas2_vault.key" | ssh "admin@$SERVER_DOMAIN" "sudo mounter"
+}
+
+function fmount() {
+	sudo mount /pinas2
+}
+
+function funmount() {
+	sudo umount /pinas2
+}
+
+SUBC="$1"
+
+shift
+
+if [[ "$SUBC" == "" ]]; then
+	echo "No subcommand specified."
+fi
+
+case "$SUBC" in
+	"ping") fping $@ ;;
+	"admin") fadmin $@ ;;
+	"reboot") freboot $@ ;;
+	"shutdown") fshutdown $@ ;;
+	"git") fgit $@ ;;
+	"up") fup $@ ;;
+	"mount") fmount $@ ;;
+	"unmount") funmount $@ ;;
+	*) help $@ ;;
+esac
