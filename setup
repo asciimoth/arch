@@ -123,11 +123,11 @@ function setflatpak() {
 	sudo flatpak update -y
 }
 
-# TODO
-#function setservices() {
-#	local TAB="$1"
-#	echo "$TAB[Enabling/disabling sysd services]"
-#}
+function setservices() {
+	local TAB="$1"
+	echo "$TAB[Enabling/disabling sysd services]"
+	sudo systemctl enable --now tailscaled
+}
 
 function setxdg() {
 	local TAB="$1"
@@ -151,7 +151,7 @@ installpkgs ""
 setgpg ""
 setflatpak ""
 setxdg ""
-#setservices ""
+setservices ""
 # TODO: setup sudoers
 # TODO: fix files permissions
 
