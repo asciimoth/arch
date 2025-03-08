@@ -49,3 +49,18 @@ tere() {
 function 2() {
 	tere
 }
+
+complete -c man which
+complete -cf sudo
+
+export HISTCONTROL="erasedups:ignorespace"
+
+source /usr/share/doc/pkgfile/command-not-found.bash
+
+shopt -s autocd
+shopt -s checkwinsize
+
+if [[ "$(command -v carapace)" != "" ]]; then
+	#export CARAPACE_BRIDGES="bash"
+	source <(carapace _carapace)
+fi

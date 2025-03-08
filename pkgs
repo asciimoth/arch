@@ -37,6 +37,10 @@ nfs-utils
 
 tere
 
+pkgfile
+
+jq
+
 yubikey-manager
 yubikey-touch-detector
 

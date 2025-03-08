@@ -8,6 +8,12 @@ SHOULD_REBOOT=""
 CONFIGPATH="$(dirname "$(realpath "$0")")"
 echo "Path to config: $CONFIGPATH"
 
+function sethosts() {
+	local TAB="$1"
+	echo "$TAB[Setting up hosts file]"
+	sudo cp "$CONFIGPATH/hosts" /etc/hosts
+}
+
 function symlink() {
 	LSRC="$1"
 	LDST="$2"
@@ -104,6 +110,28 @@ function installpkgs() {
 	sudo pacman -S --noconfirm --needed $(sed '/^[[:blank:]]*#/d;s/#.*//' $CONFIGPATH/pkgs | awk '{print $1}')
 }
 
+function installaur() {
+	local TAB="$1"
+	echo "$TAB[Installing aur stuff]"
+	local place="$(pwd)"
+	local installer="yay"
+	if ! command -v "$installer" 2>&1 > /dev/null
+	then
+		echo "$TAB$TABSIZE""Need to install $installer"
+		sudo pacman -S --noconfirm --needed --asdeps git base-devel
+		local builddir="/tmp/build-setup-$installer-$USER"
+		rm -rf "$builddir"
+		mkdir -p "$builddir"
+		cd "$builddir"
+		git clone "https://aur.archlinux.org/$installer.git"
+		cd "$installer"
+		makepkg -si --needed --noconfirm
+		yay --refresh --noconfirm
+	fi
+	cd "$place"
+	yay -S --noconfirm --needed carapace-bin
+}
+
 function setflatpak() {
 	local TAB="$1"
 	echo "$TAB[Setting up flatpak]"
@@ -157,11 +185,14 @@ function cond_reboot() {
 	echo "!! There are some changes that requre reboot !!"
 }
 
+sethosts ""
 setlocales ""
 setlinks ""
 setx ""
 setbash ""
 installpkgs ""
+installaur ""
+sudo pkgfile -u
 setgpg ""
 setflatpak ""
 setxdg ""
