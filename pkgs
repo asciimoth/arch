@@ -10,7 +10,11 @@ awesome
 xorg-server
 xorg-xinit
 xclip
-alacritty
+
+kitty
+
+man-db
+
 git
 iputils
 gping
@@ -34,7 +38,21 @@ xorg-xkill
 flameshot
 rofi
 openssh
+
 nnn
+mediainfo
+unzip
+atool
+imagemagick
+ffmpegthumbnailer
+libreoffice-fresh
+gnome-epub-thumbnailer
+djvulibre
+glow
+w3m
+librsvg
+
+mpv
 
 pv
 progress

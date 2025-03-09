@@ -68,8 +68,11 @@ function __secondarg() {
 
 function n3() {
 	rm -f "$XDG_CONFIG_HOME/nnn/.lastd"
+	export NNN_PLUG="p:preview-tui"
+	export NNN_FIFO="$(mktemp -tu "$USER-XXXXXXXXXXXXXXXXXXX-nnn.fifo")"
 	command nnn $@
-	local result="$(cat "$XDG_CONFIG_HOME/nnn/.lastd")"
+	rm -f "$NNN_FIFO"
+	local result="$(cat "$XDG_CONFIG_HOME/nnn/.lastd" 2> /dev/null)"
 	local result="$(eval "__secondarg $result")"
 	[ -n "$result" ] && zoxide add "$result" && cd -- "$result" 
 }
@@ -85,6 +88,7 @@ function n() {
 }
 
 alias nn="n ~"
+alias nnn-update-plugins="sh -c \"\$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)\""
 
 function prompt() {
 	local excode="$?"

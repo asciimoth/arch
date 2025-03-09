@@ -9,6 +9,9 @@
 ~/.gnupg/gpg.conf -> gpg.conf
 ~/.gnupg/gpg-agent.conf -> gpg-agent.conf
 
+~/.config/nnn/plugins -> nnn-plugins
+~/.config/kitty/kitty.conf -> kitty.conf
+
 ~/.config/rofi/config.rasi -> rofi.rasi
 
 ~/.xinitrc -> xinitrc

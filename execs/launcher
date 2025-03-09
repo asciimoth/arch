@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 from functools import reduce
 
-TERMINAL="alacritty"
+TERMINAL="kitty"
 
 BANNED_OPTIONS = [
 	"lw default-default\n",
@@ -25,6 +25,7 @@ GENERIC_OPTIONS = {
 	"shutdown": (["shutdown"], True),
 	"reboot": (["reboot"], True),
 	"pass": (["rofi-pass"], True),
+	"xterm": (["xterm"], True),
 }
 
 ZATHURA_OPT = {"zathura": (["zathura"], True)}
