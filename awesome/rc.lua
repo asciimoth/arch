@@ -572,3 +572,4 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- }}}
 
 awful.spawn("flameshot")
+awful.spawn("udiskie")
