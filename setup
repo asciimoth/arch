@@ -174,10 +174,10 @@ function setservices() {
 function setxdg() {
 	local TAB="$1"
 	echo "$TAB[Setting up XDG stuff]"
-	xdg-mime default browsers.desktop x-scheme-handler/http
-	xdg-mime default browsers.desktop x-scheme-handler/https
-	xdg-mime default browsers.desktop x-scheme-handler/ws
-	xdg-mime default browsers.desktop x-scheme-handler/wss
+	while IFS= read -r mime; do
+		echo "$TAB$TABSIZE""Setting up launcher as default app for $mime"
+		xdg-mime default launcher.desktop "$mime"
+	done <<< "$(cat "$CONFIGPATH/mimes")"
 }
 
 function cond_reboot() {

@@ -5,6 +5,7 @@
 ~/.config/awesome -> awesome
 
 ~/.local/share/applications/browsers.desktop -> execs/browsers.desktop
+~/.local/share/applications/launcher.desktop -> execs/launcher.desktop
 ~/.gnupg/gpg.conf -> gpg.conf
 ~/.gnupg/gpg-agent.conf -> gpg-agent.conf
 

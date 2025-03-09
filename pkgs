@@ -1,4 +1,8 @@
 zathura
+zathura-cb
+zathura-djvu
+zathura-pdf-poppler
+zathura-ps
 wget
 micro
 networkmanager

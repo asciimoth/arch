@@ -1,0 +1,5 @@
+x-scheme-handler/http
+x-scheme-handler/https
+x-scheme-handler/ws
+x-scheme-handler/wss
+application/pdf

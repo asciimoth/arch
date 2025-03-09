@@ -56,5 +56,5 @@ while True:
 		cmd = entries[selection]
 		if len(sys.argv) > 1 and sys.argv[1]:
 			cmd += [sys.argv[1]]
-		subprocess.run(cmd)
+		subprocess.Popen(cmd, start_new_session=True)
 		break

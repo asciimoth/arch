@@ -1,0 +1,118 @@
+#!/bin/python3
+
+import sys
+import os
+import re
+import subprocess
+from pathlib import Path
+from functools import reduce
+
+TERMINAL="alacritty"
+
+BANNED_OPTIONS = [
+	"lw default-default\n",
+	"lw default\n",
+]
+
+def with_term(cmd):
+	return [TERMINAL, "-e"]+cmd
+
+GENERIC_OPTIONS = {
+	TERMINAL: ([TERMINAL], True),
+	"htop": (with_term(["htop"]), True),
+	"btop": (with_term(["btop"]), True),
+	"gping": (with_term(["gping", "8.8.8.8", "1.1.1.1", "pinas2"]), True),
+}
+
+ZATHURA_OPT = {"zathura": (["zathura"], True)}
+SUBLIME_OPT = {"sublime": (["flatpak", "run", "com.sublimetext.three"], True)}
+
+def scan_wolf():
+	WOLF="io.gitlab.librewolf-community"
+	WOLF_PROFILES_DIR = Path(f"~/.var/app/{WOLF}/cache/librewolf/").expanduser()
+	return reduce(
+		lambda d, p: d | {
+			"lw "+p.split(".", 1)[1]:
+			(["flatpak", "run", WOLF, "-P", p.split(".", 1)[1]], True)
+		},
+		os.listdir(WOLF_PROFILES_DIR),
+		dict()
+	) | {"new lw": (["flatpak", "run", WOLF, "--ProfileManager"], False)}
+
+def scan_chrome():
+	return {
+		"chromium": (["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"], True),
+		# TODO: Add oneshot chromium via boxxy
+		"chromium-oneshot": (["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"], True),
+	}
+
+def scan_ssh():
+	ret = {}
+	hosts = [
+		"/etc/ssh/ssh_known_hosts",
+		os.getenv("HOME")+"/.ssh/known_hosts",
+	]
+	for h in hosts:
+		try:
+			with open(h, "r") as file:
+				for line in file:
+					host = line.split(" ", 1)[0]
+					ret[f"ssh {host}"] = (with_term(["ssh", host]), True)
+		except FileNotFoundError:
+			pass
+	return ret
+
+def is_scheme_browser(text):
+	regexp = re.compile("(((http)|(https)|(ws)|(wss))://)|(.*\\.pdf$)")
+	return regexp.match(text)
+
+def is_scheme_pdf(text):
+	regexp = re.compile(".*\\.pdf$")
+	return regexp.match(text)
+
+def rofi(prompt, stdin):
+	cmd = ["rofi", "-dmenu", "-p", "prompt"]
+	res = subprocess.run(cmd, input=stdin.encode("utf-8"), capture_output=True)
+	if res.stdout:
+		return res.stdout.decode("utf-8").replace("\n", "")
+	return ""
+
+if __name__ == "__main__":
+	while True:
+		entries = {}
+		if len(sys.argv) < 2: 
+			entries |= GENERIC_OPTIONS \
+			| scan_wolf() \
+			| scan_chrome() \
+			| scan_ssh() \
+			| ZATHURA_OPT \
+			| SUBLIME_OPT
+		else:
+			if is_scheme_browser(sys.argv[1]):
+				entries |= scan_wolf() | scan_chrome()
+			if is_scheme_pdf(sys.argv[1]):
+				entries |= ZATHURA_OPT
+			if len(entries) == 0:
+				entries |= SUBLIME_OPT
+		options = "\n".join(entries.keys())
+		for bo in BANNED_OPTIONS:
+			options = options.replace(bo, "")
+		if options == "":
+			print("No options avalable")
+			break
+		selection = rofi("Browser+profile", options)
+		if selection == "":
+			print("canceled by user")
+			break
+		if selection in entries:
+			cmd = entries[selection][0]
+			if len(sys.argv) > 1 and sys.argv[1]:
+				cmd += [sys.argv[1]]
+			if entries[selection][1]:
+				print("Launching", " ".join(cmd))
+				subprocess.Popen(cmd, start_new_session=True)
+				break
+			else:
+				print("Running", " ".join(cmd))
+				subprocess.run(cmd)
+				continue
