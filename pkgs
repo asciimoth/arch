@@ -20,6 +20,7 @@ duf
 gnupg
 pass
 pass-otp
+rofi-pass
 eza
 ripgrep-all
 bat
@@ -33,6 +34,7 @@ xorg-xkill
 flameshot
 rofi
 openssh
+nnn
 
 pv
 progress

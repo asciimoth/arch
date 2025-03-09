@@ -8,6 +8,7 @@ PATH="$HOME/config/execs:$PATH:/flatpak-aliases"
 
 export EDITOR="sublime"
 export VISUAL="sublime"
+
 export XDG_CONFIG_HOME="$HOME/.config"
 
 alias setup="$HOME/config/setup && . ~/.bashrc"
@@ -61,15 +62,49 @@ fi
 
 eval "$(zoxide init bash)"
 
-tere() {
-	local result=$(command tere "$@")
+function __secondarg() {
+	echo -n "$2"
+}
+
+function n3() {
+	rm -f "$XDG_CONFIG_HOME/nnn/.lastd"
+	command nnn $@
+	local result="$(cat "$XDG_CONFIG_HOME/nnn/.lastd")"
+	local result="$(eval "__secondarg $result")"
 	[ -n "$result" ] && zoxide add "$result" && cd -- "$result" 
 }
 
-function 2() {
+alias nnn="n3"
+
+function n() {
 	if [[ "$1" == "" ]]; then
-		tere
+		n3 -de
 	else
 		z $@
 	fi
 }
+
+alias nn="n ~"
+
+function prompt() {
+	local excode="$?"
+	if [[ "$excode" == "0" ]]; then
+		local excode=""
+	else
+		local excode=" [$excode]"
+	fi
+	local login=""
+	if [[ "$LOGNAME" != "$USER" ]]; then
+		local login=" $USER"
+	fi
+	local shlvl=" ($SHLVL)"
+	if [[ "$shlvl" == " (2)" ]]; then
+		local shlvl=""
+	fi
+	echo "$(pwd)$excode$login$shlvl"
+}
+
+# Prompts
+PS1="\$(prompt)\n$ "
+PS2="$ "
+
