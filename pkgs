@@ -5,6 +5,7 @@ networkmanager
 awesome
 xorg-server
 xorg-xinit
+xclip
 alacritty
 git
 iputils
@@ -21,6 +22,7 @@ bat
 fd
 fzf
 qrencode
+zbar
 udisks2
 udiskie
 xorg-xkill

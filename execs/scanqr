@@ -1,0 +1,45 @@
+#!/bin/bash
+
+NOTIFY=""
+CLIP=""
+
+while test $# -gt 0
+do
+	case "$1" in
+		"notify") NOTIFY=true ;;
+		"clip") CLIP=true ;;
+	esac
+	shift
+done
+
+TMPPLACE="$(mktemp -d -t $USER-scanqr-XXXXXXXXXXXXXXXXXX)"
+chmod 700 "$TMPPLACE"
+rm -rf "$TMPPLACE/*"
+
+flameshot gui -r > "$TMPPLACE/screenshot" 2> "$TMPPLACE/error"
+
+if [[ "$(cat "$TMPPLACE/error")" != "" ]]; then
+	echo "ERROR"
+	exit 1
+fi
+
+RESULT="$(zbarimg -q --raw "$TMPPLACE/screenshot")"
+echo -n "$RESULT"
+
+if [[ "$NOTIFY" != "" ]]; then
+	if [[ "$RESULT" == "" ]]; then
+		notify-send "NO QR CODE FOUND"
+	else
+		notify-send "scanqr: $RESULT"
+	fi
+fi
+
+if [[ "$RESULT" == "" ]]; then
+	exit 1
+fi
+
+if [[ "$CLIP" != "" ]]; then
+	echo -n "$RESULT" | xclip -sel clip
+fi
+
+rm -rf "$TMPPLACE"

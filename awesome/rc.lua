@@ -327,7 +327,12 @@ globalkeys = gears.table.join(
               {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"})
+              {description = "show the menubar", group = "launcher"}),
+    -- Etc
+    awful.key({}, "Print", function () awful.spawn("flameshot gui") end,
+              {description = "Take screenshot", grop="Etc"}),
+    awful.key({"Shift"}, "Print", function () awful.spawn("scanqr notify clip") end,
+              {description = "Scan qr from screen", grop="Etc"})
 )
 
 clientkeys = gears.table.join(
@@ -563,3 +568,5 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+awful.spawn("flameshot")

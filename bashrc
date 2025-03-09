@@ -35,6 +35,9 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
 alias .......="cd ../../../../../.."
+alias qr="qrencode -t UTF8 -o -"
+alias xclip="xclip -sel clip"
+alias clip="xclip -sel clip"
 
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
