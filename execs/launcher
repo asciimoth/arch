@@ -22,6 +22,8 @@ GENERIC_OPTIONS = {
 	"htop": (with_term(["htop"]), True),
 	"btop": (with_term(["btop"]), True),
 	"gping": (with_term(["gping", "8.8.8.8", "1.1.1.1", "pinas2"]), True),
+	"shutdown": (["shutdown"], True),
+	"reboot": (["reboot"], True),
 }
 
 ZATHURA_OPT = {"zathura": (["zathura"], True)}
