@@ -39,6 +39,10 @@ alias .......="cd ../../../../../.."
 alias qr="qrencode -t UTF8 -o -"
 alias xclip="xclip -sel clip"
 alias clip="xclip -sel clip"
+alias nix="sudo mkdir -p /nix/var/nix/daemon-socket && NIXPKGS_ALLOW_UNFREE=1 nix"
+alias nsh="nix shell --impure"
+alias nopt="sudo nix-store --optimise"
+alias ngc="sudo nix-collect-garbage -d"
 
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)

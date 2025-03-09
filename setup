@@ -169,6 +169,7 @@ function setservices() {
 	echo "$TAB[Enabling/disabling sysd services]"
 	sudo systemctl daemon-reload
 	sudo systemctl enable --now tailscaled
+	sudo systemctl enable --now nix-daemon
 }
 
 function setxdg() {

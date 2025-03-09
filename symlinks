@@ -11,6 +11,7 @@
 
 ~/.config/nnn/plugins -> nnn-plugins
 ~/.config/kitty/kitty.conf -> kitty.conf
+~/.config/nix/nix.conf -> nix.conf
 
 ~/.config/rofi/config.rasi -> rofi.rasi
 
