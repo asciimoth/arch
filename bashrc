@@ -41,15 +41,6 @@ export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 gpg-connect-agent updatestartuptty /bye > /dev/null
 
-tere() {
-	local result=$(command tere "$@")
-	[ -n "$result" ] && cd -- "$result"
-}
-
-function 2() {
-	tere
-}
-
 complete -c man which
 complete -cf sudo
 
@@ -64,3 +55,18 @@ if [[ "$(command -v carapace)" != "" ]]; then
 	#export CARAPACE_BRIDGES="bash"
 	source <(carapace _carapace)
 fi
+
+eval "$(zoxide init bash)"
+
+tere() {
+	local result=$(command tere "$@")
+	[ -n "$result" ] && zoxide add "$result" && cd -- "$result" 
+}
+
+function 2() {
+	if [[ "$1" == "" ]]; then
+		tere
+	else
+		z $@
+	fi
+}
