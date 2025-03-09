@@ -9,6 +9,8 @@
 ~/.gnupg/gpg.conf -> gpg.conf
 ~/.gnupg/gpg-agent.conf -> gpg-agent.conf
 
+~/.config/rofi/config.rasi -> rofi.rasi
+
 ~/.xinitrc -> xinitrc
 ~/.config/git/ignore -> gitignore
 
