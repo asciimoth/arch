@@ -70,7 +70,7 @@ function n3() {
 	rm -f "$XDG_CONFIG_HOME/nnn/.lastd"
 	export NNN_PLUG="p:preview-tui"
 	export NNN_FIFO="$(mktemp -tu "$USER-XXXXXXXXXXXXXXXXXXX-nnn.fifo")"
-	command nnn $@
+	command nnn -P p $@
 	rm -f "$NNN_FIFO"
 	local result="$(cat "$XDG_CONFIG_HOME/nnn/.lastd" 2> /dev/null)"
 	local result="$(eval "__secondarg $result")"
