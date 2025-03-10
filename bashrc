@@ -12,6 +12,8 @@ export GTERM="kitty"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 
+export GDK_DPI_SCALE=1.1
+
 alias setup="$HOME/config/setup && . ~/.bashrc"
 alias open="xdg-open"
 alias fkill="ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -9"

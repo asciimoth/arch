@@ -27,6 +27,7 @@ GENERIC_OPTIONS = {
 	"reboot": (["reboot"], True),
 	"htop": (with_term(["htop"]), True),
 	"xterm": (["xterm"], True),
+	"autorandr": (["autorandr", "--change"], True),
 }
 
 ZATHURA_OPT = {"zathura": (["zathura"], True)}
@@ -38,7 +39,7 @@ def scan_wolf():
 	return reduce(
 		lambda d, p: d | {
 			"lw "+p.split(".", 1)[1]:
-			(["flatpak", "run", WOLF, "-P", p.split(".", 1)[1]], True)
+			(["flatpak", "run", WOLF, "-P", p.split(".", 1)[1]], True, {"GDK_DPI_SCALE": "1.5"})
 		},
 		os.listdir(WOLF_PROFILES_DIR),
 		dict()
@@ -113,6 +114,10 @@ if __name__ == "__main__":
 			cmd = entries[selection][0]
 			if len(sys.argv) > 1 and sys.argv[1]:
 				cmd += [sys.argv[1]]
+			if len(entries[selection]) > 2:
+				nenvs = entries[selection][2]
+				for name in nenvs:
+					os.environ[name] = nenvs[name]
 			if entries[selection][1]:
 				print("Launching", " ".join(cmd))
 				subprocess.Popen(cmd, start_new_session=True)

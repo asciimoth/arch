@@ -16,5 +16,6 @@
 ~/.config/rofi/config.rasi -> rofi.rasi
 
 ~/.xinitrc -> xinitrc
+~/.Xresources -> xresources
 ~/.config/git/ignore -> gitignore
 

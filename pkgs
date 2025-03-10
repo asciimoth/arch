@@ -9,7 +9,12 @@ networkmanager
 awesome
 xorg-server
 xorg-xinit
+xorg-xdpyinfo
+xorg-xrandr
 xclip
+
+autorandr
+arandr
 
 kitty
 
