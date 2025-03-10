@@ -15,16 +15,17 @@ BANNED_OPTIONS = [
 ]
 
 def with_term(cmd):
-	return [TERMINAL, "-e"]+cmd
+	return [os.getenv("GTERM"), "-e"]+cmd
 
 GENERIC_OPTIONS = {
 	TERMINAL: ([TERMINAL], True),
-	"htop": (with_term(["htop"]), True),
 	"btop": (with_term(["btop"]), True),
 	"gping": (with_term(["gping", "8.8.8.8", "1.1.1.1", "pinas2"]), True),
+	"pass": (["rofi-pass"], True),
+	"telegram": (["flatpak", "run", "org.telegram.desktop"], True),
 	"shutdown": (["shutdown"], True),
 	"reboot": (["reboot"], True),
-	"pass": (["rofi-pass"], True),
+	"htop": (with_term(["htop"]), True),
 	"xterm": (["xterm"], True),
 }
 

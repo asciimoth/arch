@@ -6,8 +6,9 @@
 # Append
 PATH="$HOME/config/execs:$PATH:/flatpak-aliases"
 
-export EDITOR="sublime"
+export EDITOR="micro"
 export VISUAL="sublime"
+export GTERM="kitty"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 
