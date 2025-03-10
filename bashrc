@@ -94,6 +94,8 @@ function n() {
 	fi
 }
 
+alias cd="n"
+
 alias nn="n ~"
 alias nnn-update-plugins="sh -c \"\$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)\""
 
