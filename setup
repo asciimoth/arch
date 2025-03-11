@@ -130,6 +130,8 @@ function installaur() {
 	fi
 	cd "$place"
 	yay -S --noconfirm --needed carapace-bin
+	yay -S --noconfirm --needed cantata
+	yay -S --noconfirm --needed sublime-text-4
 }
 
 function setflatpak() {

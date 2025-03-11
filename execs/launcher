@@ -29,23 +29,59 @@ GENERIC_OPTIONS = {
 	"htop": (with_term(["htop"]), True),
 	"xterm": (["xterm"], True),
 	"autorandr": (["autorandr", "--change"], True),
+	"calc": (["flatpak", "run", "org.gnome.Calculator"], True),
+	"wirehouse": (["flatpak", "run", "io.github.flattool.Warehouse/x86_64/stable"], True),
+	"filelight": (["flatpak", "run", "org.kde.filelight"], True),
+	"picard": (["picard"], True),
+	"cheese": (["cheese"], True),
+	"xca": (["xca"], True),
+	"wireshark": (["wireshark"], True),
+	"blender": (["blender"], True),
+	"obs": (["obs"], True),
 }
 
-ZATHURA_OPT = {"zathura": (["zathura"], True)}
-SUBLIME_OPT = {"sublime": (["flatpak", "run", "com.sublimetext.three"], True)}
-FILE_MANAGER_OPT = {"nnn": (with_term(["nn"]), True)}
+PDF_OPT = {
+	"zathura": (["zathura"], True),
+	"okular": (["okular"], True),
+}
+SUBLIME_OPT = {"sublime": (["subl"], True)}
+FILE_MANAGER_OPT = {
+	"nnn": (with_term(["nn"]), True),
+	"nautilus": (["nautilus"], True),
+}
+
+VIDEO_OPT = {"mpv": (["mpv"], True)}
+IMAGES_OPT = {
+	"gthumb": (["gthumb"], True),
+	"drawing": (["drawing"], True),
+	"gimp": (["gimp"], True),
+}
+AUDIO_OPT = {}
+VECTOR_OPT = {
+	#"corepaint": (["flatpak", "run", "org.cubocore.CorePaint"], True),	
+	"inkscape": (["flatpak", "run", "org.inkscape.Inkscape"], True),	
+}
+
+def scan_fox(name = "mozilla/firefox", flatname = "org.mozilla.firefox", menu = "ff"):
+	FOX=flatname
+	FOX_PROFILES_DIR = Path(f"~/.var/app/{FOX}/cache/{name}/").expanduser()
+	ret = {}
+	try:
+		ret = reduce(
+			lambda d, p: d | {
+				menu+" "+p.split(".", 1)[1]:
+				(["flatpak", "run", FOX, "-P", p.split(".", 1)[1]], True, {"GDK_DPI_SCALE": "1.5"})
+			},
+			os.listdir(FOX_PROFILES_DIR),
+			ret
+		)
+	except FileNotFoundError as e:
+		print(e)
+	ret |= {f"new {menu}": (["flatpak", "run", FOX, "--ProfileManager"], False)}
+	return ret
 
 def scan_wolf():
-	WOLF="io.gitlab.librewolf-community"
-	WOLF_PROFILES_DIR = Path(f"~/.var/app/{WOLF}/cache/librewolf/").expanduser()
-	return reduce(
-		lambda d, p: d | {
-			"lw "+p.split(".", 1)[1]:
-			(["flatpak", "run", WOLF, "-P", p.split(".", 1)[1]], True, {"GDK_DPI_SCALE": "1.5"})
-		},
-		os.listdir(WOLF_PROFILES_DIR),
-		dict()
-	) | {"new lw": (["flatpak", "run", WOLF, "--ProfileManager"], False)}
+	return scan_fox("librewolf", "io.gitlab.librewolf-community", "lw")
 
 def scan_chrome():
 	return {
@@ -75,11 +111,30 @@ def is_scheme_browser(text):
 	return regexp.match(text)
 
 def is_scheme_pdf(text):
+	# TODO: Case isecitive
 	regexp = re.compile(".*\\.pdf$")
 	return regexp.match(text)
 
+def is_scheme_video(text):
+	# TODO: Case isecitive
+	regexp = re.compile(".*\\.((mp3)|(mp4))$")
+	return regexp.match(text)	
+
+def is_scheme_image(text):
+	# TODO: Case isecitive
+	regexp = re.compile(".*\\.((png)|(jpg)|(jpeg)|(bmp)|(gif)|(webp)|(psd)|(xcf)|(xd)|(cdr)|(fig)|(raw)|(tga))$")
+	return regexp.match(text)
+
+def is_scheme_vector(text):
+	# TODO: Case isecitive
+	regexp = re.compile(".*\\.svg$")
+	return regexp.match(text)
+
+def is_scheme_audio(text):
+	return False # TODO
+
 def rofi(prompt, stdin):
-	cmd = ["rofi", "-dmenu", "-p", "prompt"]
+	cmd = ["rofi", "-dmenu", "-p", prompt]
 	res = subprocess.run(cmd, input=stdin.encode("utf-8"), capture_output=True)
 	if res.stdout:
 		return res.stdout.decode("utf-8").replace("\n", "")
@@ -91,17 +146,36 @@ if __name__ == "__main__":
 		if len(sys.argv) < 2: 
 			entries |= GENERIC_OPTIONS \
 			| scan_wolf() \
+			| scan_fox() \
 			| scan_chrome() \
 			| scan_ssh() \
-			| ZATHURA_OPT \
-			| SUBLIME_OPT
+			| PDF_OPT \
+			| SUBLIME_OPT \
+			| VIDEO_OPT \
+			| IMAGES_OPT \
+			| AUDIO_OPT \
+			| VECTOR_OPT
 		else:
 			if is_scheme_browser(sys.argv[1]):
-				entries |= scan_wolf() | scan_chrome()
+				entries |= scan_wolf() | scan_chrome() | scan_fox()
 			if is_scheme_pdf(sys.argv[1]):
-				entries |= ZATHURA_OPT
-			if len(entries) == 0:
-				entries |= SUBLIME_OPT
+				entries |= PDF_OPT
+			if is_scheme_video(sys.argv[1]):
+				entries |= VIDEO_OPT
+				entries |= scan_wolf() | scan_chrome() | scan_fox()
+			if is_scheme_audio(sys.argv[1]):
+				entries |= AUDIO_OPT
+				entries |= VIDEO_OPT
+				entries |= scan_wolf() | scan_chrome() | scan_fox()
+			if is_scheme_image(sys.argv[1]):
+				entries |= IMAGES_OPT
+				entries |= VIDEO_OPT
+				entries |= scan_wolf() | scan_chrome() | scan_fox()
+			if is_scheme_vector(sys.argv[1]):
+				entries |= VECTOR_OPT
+				entries |= IMAGES_OPT
+				entries |= scan_wolf() | scan_chrome() | scan_fox()
+		entries |= SUBLIME_OPT
 		entries |= FILE_MANAGER_OPT
 		options = "\n".join(entries.keys())
 		for bo in BANNED_OPTIONS:
@@ -109,7 +183,10 @@ if __name__ == "__main__":
 		if options == "":
 			print("No options avalable")
 			break
-		selection = rofi("Browser+profile", options)
+		prompt = "app"
+		if len(sys.argv) > 1:
+			prompt = f"Open {sys.argv[1]} with"
+		selection = rofi(prompt, options)
 		if selection == "":
 			print("canceled by user")
 			break
