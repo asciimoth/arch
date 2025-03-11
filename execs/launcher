@@ -111,22 +111,18 @@ def is_scheme_browser(text):
 	return regexp.match(text)
 
 def is_scheme_pdf(text):
-	# TODO: Case isecitive
 	regexp = re.compile(".*\\.pdf$", re.IGNORECASE)
 	return regexp.match(text)
 
 def is_scheme_video(text):
-	# TODO: Case isecitive
 	regexp = re.compile(".*\\.((mp3)|(mp4))$", re.IGNORECASE)
 	return regexp.match(text)	
 
 def is_scheme_image(text):
-	# TODO: Case isecitive
 	regexp = re.compile(".*\\.((png)|(jpg)|(jpeg)|(bmp)|(gif)|(webp)|(psd)|(xcf)|(xd)|(cdr)|(fig)|(raw)|(tga))$", re.IGNORECASE)
 	return regexp.match(text)
 
 def is_scheme_vector(text):
-	# TODO: Case isecitive
 	regexp = re.compile(".*\\.svg$", re.IGNORECASE)
 	return regexp.match(text)
 

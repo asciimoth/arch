@@ -4,7 +4,7 @@
 #echo "<config>/bashrc loaded"
 
 # Append
-PATH="$HOME/config/execs:$PATH:/flatpak-aliases"
+export PATH="$HOME/config/execs:$PATH:/flatpak-aliases"
 
 export EDITOR="micro"
 export VISUAL="sublime"
