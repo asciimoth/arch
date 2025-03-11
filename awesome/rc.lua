@@ -27,6 +27,9 @@ if awesome.startup_errors then
                      text = awesome.startup_errors })
 end
 
+awpwkb = require("awpwkb")
+kb = awpwkb.init()
+
 -- Handle runtime errors after startup
 do
     local in_error = false

@@ -3,5 +3,6 @@
 rm -f "$XDG_CONFIG_HOME/nnn/.lastd"
 export NNN_PLUG="p:preview-tui"
 export NNN_FIFO="$(mktemp -tu "$USER-XXXXXXXXXXXXXXXXXXX-nnn.fifo")"
-command nnn -P p -de $@
+export VISUAL="$EDITOR"
+command nnn -P p -d -E -H $@
 rm -f "$NNN_FIFO"
