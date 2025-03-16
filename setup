@@ -184,6 +184,22 @@ function setxdg() {
 	done <<< "$(cat "$CONFIGPATH/mimes")"
 }
 
+function setvscode() {
+	local TAB="$1"
+	echo "$TAB[Setting up vscode]"
+	code --install-extension mikestead.dotenv
+	code --install-extension aaron-bond.better-comments
+	code --install-extension mkhl.direnv
+	code --install-extension usernamehw.errorlens
+	code --install-extension ms-vscode.hexeditor
+	code --install-extension shd101wyy.markdown-preview-enhanced
+	code --install-extension dcasella.monokai-plusplus
+	code --install-extension jnoortheen.nix-ide
+	code --install-extension ms-ceintl.vscode-language-pack-ru
+	code --install-extension wayou.vscode-todo-highlight
+	code --install-extension ms-vscode.wasm-wasi-core
+}
+
 function cond_reboot() {
 	[[ $SHOULD_REBOOT != true ]] && return
 	echo "!! There are some changes that requre reboot !!"
@@ -200,6 +216,7 @@ sudo pkgfile -u
 setgpg ""
 setflatpak ""
 setxdg ""
+setvscode ""
 setpinas ""
 setservices ""
 # TODO: setup sudoers
