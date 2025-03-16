@@ -1,0 +1,12 @@
+- https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer
+- https://marketplace.visualstudio.com/items?itemName=SimonSiefke.svg-preview
+- https://marketplace.visualstudio.com/items?itemName=tamasfe.even-better-toml
+- https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid
+- https://marketplace.visualstudio.com/items?itemName=jock.svg
+- https://marketplace.visualstudio.com/items?itemName=sumneko.lua
+- https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+- https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker
+- https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+- https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github
+- https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml
+- https://marketplace.visualstudio.com/items?itemName=golang.Go

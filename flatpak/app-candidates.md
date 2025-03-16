@@ -1,0 +1,12 @@
+- https://flathub.org/apps/com.usebottles.bottles
+- https://flathub.org/apps/io.freetubeapp.FreeTube
+- https://flathub.org/apps/org.pulseaudio.pavucontrol
+- https://flathub.org/apps/org.kde.kgraphviewer
+- https://flathub.org/apps/io.github.fralonra.WgShadertoy
+- sound
+	- https://flathub.org/apps/org.gnome.SoundRecorder
+	- https://flathub.org/apps/org.tenacityaudio.Tenacity
+	- https://flathub.org/apps/org.audacityteam.Audacity
+- video
+	- https://flathub.org/apps/org.kde.kdenlive
+	- https://flathub.org/apps/no.mifi.losslesscut
