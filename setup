@@ -142,6 +142,7 @@ function setflatpak() {
 	while IFS= read -r fltp; do
 		read -r repo pkg als <<< "$fltp"
 		sudo flatpak install -y "$repo" "$pkg"
+		sudo flatpak override --device=all "$pkg"
 		if [[ "$als" != "" ]]; then
 			local FL_CMD="flatpak run $pkg "'$@'
 			echo "$TAB$TABSIZE""Creagting alias script $als -> $FL_CMD"
