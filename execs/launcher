@@ -64,7 +64,7 @@ VECTOR_OPT = {
 
 def scan_vscode():
 	return {
-		"code": (["code"], True),
+		"code": (["runcode"], True),
 	}
 
 def scan_fox(name = "mozilla/firefox", flatname = "org.mozilla.firefox", menu = "ff"):

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cd ~
+
+PROJ=$(fd -t d -E __pycache__ -E vendor | rofi -dmenu -p "vscode project")
+
+if [[ "$PROJ" == "" ]]; then
+	echo "No project selected"
+	exit 1
+fi
+
+code --new-window "$PROJ"
