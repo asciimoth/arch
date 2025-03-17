@@ -1,6 +1,5 @@
 - https://flathub.org/apps/com.usebottles.bottles
 - https://flathub.org/apps/io.freetubeapp.FreeTube
-- https://flathub.org/apps/org.pulseaudio.pavucontrol
 - https://flathub.org/apps/org.kde.kgraphviewer
 - https://flathub.org/apps/io.github.fralonra.WgShadertoy
 - sound

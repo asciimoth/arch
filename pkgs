@@ -1,3 +1,13 @@
+pipewire
+lib32-pipewire
+wireplumber
+pipewire-alsa
+pipewire-pulse
+alsa-firmware
+sof-firmware
+alsa-utils
+qpwgraph
+
 zathura
 zathura-cb
 zathura-djvu
@@ -26,7 +36,6 @@ ttf-firacode-nerd
 direnv
 
 libfido2
-
 gimp
 
 blender

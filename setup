@@ -8,6 +8,12 @@ SHOULD_REBOOT=""
 CONFIGPATH="$(dirname "$(realpath "$0")")"
 echo "Path to config: $CONFIGPATH"
 
+function setuser() {
+	local TAB="$1"
+	echo "$TAB[Setting up user $USER]"
+	sudo usermod -aG audio $USER
+}
+
 function sethosts() {
 	local TAB="$1"
 	echo "$TAB[Setting up hosts file]"
@@ -132,6 +138,7 @@ function installaur() {
 	yay -S --noconfirm --needed carapace-bin
 	yay -S --noconfirm --needed cantata
 	yay -S --noconfirm --needed sublime-text-4
+	#yay -S --noconfirm --needed pwvucontrol
 }
 
 function setflatpak() {
@@ -173,6 +180,8 @@ function setservices() {
 	sudo systemctl daemon-reload
 	sudo systemctl enable --now tailscaled
 	sudo systemctl enable --now nix-daemon
+	systemctl --user enable --now wireplumber.service
+	systemctl --user enable --now pipewire-pulse.service
 }
 
 function setxdg() {
@@ -205,6 +214,7 @@ function cond_reboot() {
 	echo "!! There are some changes that requre reboot !!"
 }
 
+setuser ""
 sethosts ""
 setlocales ""
 setlinks ""
