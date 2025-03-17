@@ -562,47 +562,40 @@ root.keys(globalkeys)
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = awful.client.focus.filter,
-                     raise = true,
-                     keys = clientkeys,
-                     buttons = clientbuttons,
-                     screen = awful.screen.preferred,
-                     placement = awful.placement.no_overlap+awful.placement.no_offscreen
-     }
+      properties = {
+        border_width = beautiful.border_width,
+        border_color = beautiful.border_normal,
+        focus = awful.client.focus.filter,
+        raise = true,
+        keys = clientkeys,
+        buttons = clientbuttons,
+        screen = awful.screen.preferred,
+        placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+        floating = true,
+      }
     },
 
-    -- Floating clients.
+    -- Tiling clients.
     { rule_any = {
-        instance = {
-          "DTA",  -- Firefox addon DownThemAll.
-          "copyq",  -- Includes session name in class.
-          "pinentry",
-        },
+        instance = { },
         class = {
-          "Arandr",
-          "Blueman-manager",
-          "Gpick",
-          "Kruler",
-          "MessageWin",  -- kalarm.
-          "Sxiv",
-          "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
-          "Wpa_gui",
-          "veromix",
-          "xtightvncviewer"},
-
-        -- Note that the name property shown in xprop might be set slightly after creation of the client
-        -- and the name shown there might not match defined rules here.
-        name = {
-          "Event Tester",  -- xev.
+          "sublime_text",
+          "Sublime_text",
+          "kitty",
+          "LibreWolf",
+          "code-oss",
+          "telegram-desktop",
+          "TelegramDesktop",
+          "obsidian",
+          "firefox",
         },
-        role = {
-          "AlarmWindow",  -- Thunderbird's calendar.
-          "ConfigManager",  -- Thunderbird's about:config.
-          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
-        }
-      }, properties = { floating = true }},
+        name = { },
+        role = { }
+      },
+      properties = {
+        floating = false
+      }
+    },
 
     -- Add titlebars to normal clients and dialogs
     --[[ {
@@ -623,6 +616,43 @@ awful.rules.rules = {
       }
     },
 
+    -- Floating clients.
+    { rule_any = {
+        instance = {
+          "DTA",  -- Firefox addon DownThemAll.
+          "copyq",  -- Includes session name in class.
+          "pinentry",
+        },
+        class = {
+          "Arandr",
+          "Blueman-manager",
+          "Gpick",
+          "Kruler",
+          "MessageWin",  -- kalarm.
+          "Sxiv",
+          "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
+          "Wpa_gui",
+          "veromix",
+          "xtightvncviewer",
+          "Places", -- Firefox / LibreWolf downloads explorer
+        },
+        -- Note that the name property shown in xprop might be set slightly after creation of the client
+        -- and the name shown there might not match defined rules here.
+        name = {
+          "Event Tester",  -- xev.
+        },
+        role = {
+          "AlarmWindow",  -- Thunderbird's calendar.
+          "ConfigManager",  -- Thunderbird's about:config.
+          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+        }
+      }, properties = { floating = true }},
+
+    --[[ { rule_any = { floating = true },
+      properties = {
+        placement = awful.placement.centered,
+      },
+    }, ]]--
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { screen = 1, tag = "2" } },
@@ -641,6 +671,39 @@ client.connect_signal("manage", function (c)
       and not c.size_hints.program_position then
         -- Prevent clients from being unreachable after screen count changes.
         awful.placement.no_offscreen(c)
+    end
+end)
+
+local function setup_floating(c)
+  local screen_geo = c.screen.geometry
+  local client_geo = c:geometry()
+  local max_width = screen_geo.width * 0.6
+  local max_height = screen_geo.height * 0.8
+
+  -- Apply size constraints
+  local new_width = math.min(client_geo.width, max_width)
+  local new_height = math.min(client_geo.height, max_height)
+
+  -- Update geometry with constraints and centering
+  c:geometry({
+      x = screen_geo.x + (screen_geo.width - new_width) / 2,
+      y = screen_geo.y + (screen_geo.height - new_height) / 2,
+      width = new_width,
+      height = new_height
+  })
+end
+
+-- Center new floating windows
+client.connect_signal("manage", function(c)
+    if c.floating then
+      setup_floating(c)
+    end
+end)
+
+-- Optional: Also center windows that become floating later
+client.connect_signal("property::floating", function(c)
+    if c.floating then
+      setup_floating(c)
     end
 end)
 
