@@ -18,6 +18,15 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
+local battery_widget = require("awesome-wm-widgets.battery-widget.battery")
+local brightness_widget = require("awesome-wm-widgets.brightness-widget.brightness")
+local ram_widget = require("awesome-wm-widgets.ram-widget.ram-widget")
+local cpu_widget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
+-- local weather_widget = require("awesome-wm-widgets.weather-widget.weather")
+-- local weather_api_widget = require("awesome-wm-widgets.weather-api-widget.weather")
+local fs_widget = require("awesome-wm-widgets.fs-widget.fs-widget")
+local calendar_widget = require("awesome-wm-widgets.calendar-widget.calendar")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -170,6 +179,16 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
 
+local cw = calendar_widget({
+  placement = 'top_right',
+})
+
+mytextclock:connect_signal("button::press",
+  function(_, _, _, button)
+    if button == 1 then cw.toggle() end
+  end
+)
+
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
                     awful.button({ }, 1, function(t) t:view_only() end),
@@ -272,7 +291,27 @@ awful.screen.connect_for_each_screen(function(s)
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
+            --[[weather_widget({
+              api_key='c8c14ebc61603e08f14b954e7fc9f95e',
+              coordinates = {45.5017, -73.5673},
+            }),]]--
+            --[[ weather_api_widget({
+              api_key = 'c8c14ebc61603e08f14b954e7fc9f95e',
+              coordinates = {45.5017, -73.5673},
+              show_forecast_on_hover = true,
+            }), ]]--
             mykeyboardlayout,
+            battery_widget(),
+            brightness_widget{
+              type = 'arc',
+              program = 'brightnessctl',
+              step = 2,
+              timeout = 10,
+              rmb_set_max = true,
+            },
+            ram_widget(),
+            cpu_widget(),
+            fs_widget(),
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,

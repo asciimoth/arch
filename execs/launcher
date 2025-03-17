@@ -29,6 +29,7 @@ GENERIC_OPTIONS = {
 	"htop": (with_term(["htop"]), True),
 	"xterm": (["xterm"], True),
 	"autorandr": (["autorandr", "--change"], True),
+	"obsidian": (["flatpak", "run", "md.obsidian.Obsidian"], True),
 	"calc": (["flatpak", "run", "org.gnome.Calculator"], True),
 	"wirehouse": (["flatpak", "run", "io.github.flattool.Warehouse/x86_64/stable"], True),
 	"filelight": (["flatpak", "run", "org.kde.filelight"], True),

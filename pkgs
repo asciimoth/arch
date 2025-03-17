@@ -8,6 +8,12 @@ sof-firmware
 alsa-utils
 qpwgraph
 
+acpi
+
+arc-icon-theme
+
+brightnessctl
+
 zathura
 zathura-cb
 zathura-djvu
