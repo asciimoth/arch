@@ -5,6 +5,7 @@ flathub io.github.ungoogled_software.ungoogled_chromium chromium
 flathub org.telegram.desktop telegram
 flathub org.kde.filelight filelight
 flathub org.gnome.Calculator calc
+flathub md.obsidian.Obsidian obsidian
 flathub org.inkscape.Inkscape inkscape
 
 
