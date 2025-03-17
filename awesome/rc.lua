@@ -502,8 +502,22 @@ awful.rules.rules = {
       }, properties = { floating = true }},
 
     -- Add titlebars to normal clients and dialogs
-    { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = true }
+    --[[ {
+      rule_any = {
+        type = { "dialog" },
+      },
+      properties = { titlebars_enabled = true }
+    }, ]]--
+
+   -- Set Picture-In-Picture windows start properties
+    { rule = { class = "Picture-in-Picture" },
+      properties = {
+         floating = true,
+         ontop = true,
+         sticky = true,
+         placement = awful.placement.centered,
+         focus = false,
+      }
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
@@ -568,9 +582,9 @@ client.connect_signal("request::titlebars", function(c)
 end)
 
 -- Enable sloppy focus, so that focus follows mouse.
-client.connect_signal("mouse::enter", function(c)
+--[[ client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
-end)
+end) ]]--
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
