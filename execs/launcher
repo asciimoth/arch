@@ -39,6 +39,7 @@ GENERIC_OPTIONS = {
 	"wireshark": (["wireshark"], True),
 	"blender": (["blender"], True),
 	"obs": (["obs"], True),
+	"xkill": (["xkill"], True),
 }
 
 PDF_OPT = {
