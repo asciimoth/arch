@@ -62,6 +62,64 @@ editor_cmd = os.getenv("VISUAL") or (terminal .. " -e " .. editor)
 -- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
+local function change_volume(step)
+    -- Set volume and limit maximum to 150%
+    os.execute("wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. step .. " --limit 3.0")
+    
+    -- Get current volume percentage
+    local handle = io.popen("wpctl get-volume @DEFAULT_AUDIO_SINK@")
+    local result = handle:read("*a")
+    handle:close()
+    
+    -- Extract volume value and convert to percentage
+    local volume_level = tonumber(result:match("Volume:%s*([%d.]+)")) * 100
+    local volume_text = string.format("%d%%", math.floor(volume_level + 0.5))  -- Round to nearest integer
+    
+    -- Destroy previous notification if exists
+    if volume_notification then
+        naughty.destroy(volume_notification)
+    end
+
+    -- Show notification with volume percentage
+    volume_notification = naughty.notify {
+        title = "Volume",
+        text = volume_text,
+        timeout = 1,
+        position = "top_right",
+        bg = "#333333",
+        fg = "#FFFFFF"
+    }
+end
+
+local function mute()
+  os.execute("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
+
+  local handle = io.popen("wpctl get-volume @DEFAULT_AUDIO_SINK@")
+  local result = handle:read("*a")
+  handle:close()
+
+  local txt = "Unmuted"
+
+  if string.find(result, "MUTED") then
+    txt = "Muted"
+  end
+
+  -- Destroy previous notification if exists
+  if volume_notification then
+      naughty.destroy(volume_notification)
+  end
+
+  -- Show notification with volume percentage
+  volume_notification = naughty.notify {
+      title = "Volume",
+      text = txt,
+      timeout = 1,
+      position = "top_right",
+      bg = "#333333",
+      fg = "#FFFFFF"
+  }
+end
+
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
     awful.layout.suit.spiral,
@@ -339,7 +397,13 @@ globalkeys = gears.table.join(
     awful.key({"Shift"}, "Print", function () awful.spawn("scanqr notify clip") end,
               {description = "Scan qr from screen", grop="Etc"}),
     awful.key({"Control"}, "Print", function () awful.spawn("peek") end,
-              {description = "Capture screen to gif", grop="Etc"})
+              {description = "Capture screen to gif", grop="Etc"}),
+    awful.key({ modkey }, "F2", function() change_volume("5%-") end,
+      {description = "Lower volume by 5%", group = "Media"}),
+    awful.key({ modkey }, "F3", function() change_volume("5%+") end,
+      {description = "Raise volume by 5%", group = "Media"}),
+    awful.key({ modkey }, "F1", function() mute() end,
+      {description = "Toggle mute", group = "Media"})
 )
 
 clientkeys = gears.table.join(
