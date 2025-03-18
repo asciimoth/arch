@@ -59,5 +59,6 @@
         "package-lock.json": true,
         "phpcs.xml": true,
     },
-    "workbench.colorTheme": "Monokai++ Unified"
+    "workbench.colorTheme": "Monokai++ Unified",
+    "git.confirmSync": false
 }
