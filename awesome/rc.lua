@@ -432,11 +432,11 @@ globalkeys = gears.table.join(
               {description = "show the menubar", group = "launcher"}),
     -- Etc
     awful.key({}, "Print", function () awful.spawn("flameshot gui") end,
-              {description = "Take screenshot", grop="Etc"}),
+              {description = "Take screenshot", group="PrtSc"}),
     awful.key({"Shift"}, "Print", function () awful.spawn("scanqr notify clip") end,
-              {description = "Scan qr from screen", grop="Etc"}),
+              {description = "Scan qr from screen", group="PrtSc"}),
     awful.key({"Control"}, "Print", function () awful.spawn("peek") end,
-              {description = "Capture screen to gif", grop="Etc"}),
+              {description = "Capture screen to gif", group="PrtSc"}),
     awful.key({ modkey }, "F2", function() change_volume("5%-") end,
       {description = "Lower volume by 5%", group = "Media"}),
     awful.key({ modkey }, "F3", function() change_volume("5%+") end,
@@ -645,6 +645,7 @@ awful.rules.rules = {
           "AlarmWindow",  -- Thunderbird's calendar.
           "ConfigManager",  -- Thunderbird's about:config.
           "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+          "GtkFileChooserDialog",
         }
       }, properties = { floating = true }},
 
