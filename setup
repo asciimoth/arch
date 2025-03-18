@@ -180,6 +180,7 @@ function setservices() {
 	sudo systemctl daemon-reload
 	sudo systemctl enable --now tailscaled
 	sudo systemctl enable --now nix-daemon
+	sudo systemctl enable --now bluetooth.service
 	systemctl --user enable --now wireplumber.service
 	systemctl --user enable --now pipewire-pulse.service
 }
