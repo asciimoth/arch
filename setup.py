@@ -290,7 +290,7 @@ def setup_flatpak():
 				split(f"{ESCALATE_CMD} flatpak override --device={info["device"]}")+[info["name"]]
 			)
 		if "script" in info:
-			cmd = f"#!/bin/bash\nflatpak run {pkg} $@"
+			cmd = f"#!/bin/bash\nflatpak run {info["name"]} $@"
 			script = path.join("/flatpak-aliases", info["script"])
 			write_to_file(script, cmd.encode("utf-8"), True, False)
 			chmod(script, 755)
