@@ -640,12 +640,14 @@ awful.rules.rules = {
         -- and the name shown there might not match defined rules here.
         name = {
           "Event Tester",  -- xev.
+          -- "Firefox - Choose User Profile",
         },
         role = {
           "AlarmWindow",  -- Thunderbird's calendar.
           "ConfigManager",  -- Thunderbird's about:config.
           "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
           "GtkFileChooserDialog",
+          "Dialog",
         }
       }, properties = { floating = true }},
 
