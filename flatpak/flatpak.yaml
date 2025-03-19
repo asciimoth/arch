@@ -1,0 +1,42 @@
+pkgs:
+  warehouse:
+      repo: flathub
+      name: io.github.flattool.Warehouse/x86_64/stable
+      script: warehouse
+  librewolf:
+      repo: flathub
+      name: io.gitlab.librewolf-community
+      script: librewolf
+      device: all
+  firefox:
+      repo: flathub
+      name: org.mozilla.firefox
+      script: firefox
+      device: all
+  chromium:
+      repo: flathub
+      name: io.github.ungoogled_software.ungoogled_chromium
+      script: chromium
+      device: all
+  telegram:
+      repo: flathub
+      name: org.telegram.desktop
+      script: telegram
+  filelight:
+      repo: flathub
+      name: org.kde.filelight
+      script: filelight
+      device: all
+  calc:
+      repo: flathub
+      name: org.gnome.Calculator
+      script: calc
+  obsidian:
+      repo: flathub
+      name: md.obsidian.Obsidian
+      script: obsidian
+  inkscape:
+      repo: flathub
+      name: org.inkscape.Inkscape
+      script: inkscape
+      device: all

@@ -1,3 +1,7 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !! Deprecated due flatpak.yaml !!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 flathub io.github.flattool.Warehouse/x86_64/stable warehouse
 flathub io.gitlab.librewolf-community librewolf
 flathub org.mozilla.firefox firefox

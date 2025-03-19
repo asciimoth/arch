@@ -14,11 +14,11 @@ function setuser() {
 	sudo usermod -aG audio $USER
 }
 
-function sethosts() {
-	local TAB="$1"
-	echo "$TAB[Setting up hosts file]"
-	sudo cp "$CONFIGPATH/hosts" /etc/hosts
-}
+#function sethosts() {
+#	local TAB="$1"
+#	echo "$TAB[Setting up hosts file]"
+#	sudo cp "$CONFIGPATH/hosts" /etc/hosts
+#}
 
 function symlink() {
 	LSRC="$1"
@@ -185,14 +185,14 @@ function setservices() {
 	systemctl --user enable --now pipewire-pulse.service
 }
 
-function setxdg() {
-	local TAB="$1"
-	echo "$TAB[Setting up XDG stuff]"
-	while IFS= read -r mime; do
-		echo "$TAB$TABSIZE""Setting up launcher as default app for $mime"
-		xdg-mime default launcher.desktop "$mime"
-	done <<< "$(cat "$CONFIGPATH/mimes")"
-}
+#function setxdg() {
+#	local TAB="$1"
+#	echo "$TAB[Setting up XDG stuff]"
+#	while IFS= read -r mime; do
+#		echo "$TAB$TABSIZE""Setting up launcher as default app for $mime"
+#		xdg-mime default launcher.desktop "$mime"
+#	done <<< "$(cat "$CONFIGPATH/mimes")"
+#}
 
 function setvscode() {
 	local TAB="$1"
@@ -215,22 +215,25 @@ function cond_reboot() {
 	echo "!! There are some changes that requre reboot !!"
 }
 
-setuser ""
-sethosts ""
-setlocales ""
-setlinks ""
-setx ""
-setbash ""
-installpkgs ""
-installaur ""
-sudo pkgfile -u
-setgpg ""
-setflatpak ""
-setxdg ""
-setvscode ""
-setpinas ""
-setservices ""
+#setuser ""
+#sethosts ""
+#setlocales ""
+#setlinks ""
+#setx ""
+#setbash ""
+#installpkgs ""
+#installaur ""
+#sudo pkgfile -u
+#setgpg ""
+#setflatpak ""
+#setxdg ""
+#setvscode ""
+#setpinas ""
+#setservices ""
 # TODO: setup sudoers
 # TODO: fix files permissions
 
-cond_reboot
+#cond_reboot
+
+echo "This script deprecated; Use setup.py instead"
+exit 1

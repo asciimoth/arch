@@ -1,0 +1,26 @@
+# User-global git configuration
+"~/.gitconfig": gitconfig
+"~/.config/git/ignore": gitignore
+
+# Awesome wm config
+"~/.config/awesome": awesome
+
+"~/.local/share/applications/browsers.desktop": execs/browsers.desktop
+"~/.local/share/applications/launcher.desktop": execs/launcher.desktop
+"~/.gnupg/gpg.conf": gpg.conf
+"~/.gnupg/gpg-agent.conf": gpg-agent.conf
+
+"~/.config/nnn/plugins": nnn-plugins
+"~/.config/kitty/kitty.conf": kitty.conf
+"~/.config/nix/nix.conf": nix.conf
+
+"~/.config/rofi/config.rasi": rofi.rasi
+
+"~/.config/Code - OSS/User/settings.json": vscode/settings.json
+
+"~/.config/sublime-text/Packages/User/Preferences.sublime-settings": sublime/prefs.json
+
+"~/.xinitrc": xinitrc
+"~/.Xresources": xresources
+
+"~/.config/mimeapps.list": mimeapps.list

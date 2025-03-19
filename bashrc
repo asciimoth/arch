@@ -15,7 +15,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export GDK_DPI_SCALE=1.1
 export GTK_THEME=Adwaita:dark
 
-alias setup="$HOME/config/setup && . ~/.bashrc"
+alias setup="$HOME/config/setup.py && . ~/.bashrc"
 alias open="xdg-open"
 alias fkill="ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -9"
 alias rf="rm -rf"

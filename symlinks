@@ -1,3 +1,7 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !! Deprecated due symlinks.yaml !!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 # User-global git configuration
 ~/.gitconfig -> gitconfig
 

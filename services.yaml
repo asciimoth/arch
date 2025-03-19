@@ -1,0 +1,7 @@
+system:
+  tailscaled: true
+  nix-daemon: true
+  bluetooth.service: true
+user:
+  wireplumber.service: true
+  pipewire-pulse.service: true
