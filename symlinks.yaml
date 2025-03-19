@@ -24,3 +24,5 @@
 "~/.Xresources": xresources
 
 "~/.config/mimeapps.list": mimeapps.list
+
+"~/.config/launcher.yaml": launcher.yaml

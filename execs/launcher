@@ -1,140 +1,136 @@
 #!/bin/python3
 
-import sys
-import os
 import re
+import sys
+import yaml
 import subprocess
+from os import environ, listdir
 from pathlib import Path
 from functools import reduce
-from secrets import token_urlsafe
 
-TERMINAL="kitty"
+TERMINAL = environ["GTERM"]
+USER = environ["USER"]
+CONFIG = f"/home/{USER}/.config/launcher.yaml"
 
-BANNED_OPTIONS = [
-	"lw default-default\n",
-	"lw default\n",
-]
+BROWSER_MIMES = ["image", "video", "document"]
+BROWSER_REGEXP = ["(((http)|(https)|(ws)|(wss))://)|(.*\\.pdf$)"]
+
+def yaml_load(file):
+	with open(file) as stream:
+		return yaml.safe_load(stream)
 
 def with_term(cmd):
-	return [os.getenv("GTERM"), "-e"]+cmd
+	if len(cmd) > 0:
+		return [TERMINAL, "-e"]+cmd
+	return [TERMINAL]
 
-GENERIC_OPTIONS = {
-	TERMINAL: ([TERMINAL], True),
-	"btop": (with_term(["btop"]), True),
-	"gping": (with_term(["gping", "8.8.8.8", "1.1.1.1", "pinas2"]), True),
-	"pass": (["rofi-pass"], True),
-	"telegram": (["flatpak", "run", "org.telegram.desktop"], True),
-	"shutdown": (["shutdown"], True),
-	"reboot": (["reboot"], True),
-	"htop": (with_term(["htop"]), True),
-	"xterm": (["xterm"], True),
-	"autorandr": (["autorandr", "--change"], True),
-	"obsidian": (["flatpak", "run", "md.obsidian.Obsidian"], True),
-	"calc": (["flatpak", "run", "org.gnome.Calculator"], True),
-	"wirehouse": (["flatpak", "run", "io.github.flattool.Warehouse/x86_64/stable"], True),
-	"filelight": (["flatpak", "run", "org.kde.filelight"], True),
-	"picard": (["picard"], True),
-	"cheese": (["cheese"], True),
-	"xca": (["xca"], True),
-	"wireshark": (["wireshark"], True),
-	"blender": (["blender"], True),
-	"obs": (["obs"], True),
-	"xkill": (["xkill"], True),
-}
+def regexp_filter(opt, arg):
+	for exp in opt.get("regexps") or []:
+		if re.compile(exp, re.IGNORECASE).match(arg):
+			return True
+	return False
 
-PDF_OPT = {
-	"zathura": (["zathura"], True),
-	"okular": (["okular"], True),
-}
-SUBLIME_OPT = {"sublime": (["subl"], True)}
-FILE_MANAGER_OPT = {
-	"nnn": (with_term(["nn"]), True),
-	"nautilus": (["nautilus"], True),
-}
+def filter_by(options, arg=None):
+	filters = []
+	if arg:
+		filters.append(lambda opt: regexp_filter(opt, arg))
+		result = subprocess.run(
+			["xdg-mime", "query", "filetype", arg],
+			stdout = subprocess.PIPE,
+		)
+		if result.returncode == 0:
+			mime = result.stdout.decode("utf-8").strip()
+			filters.append(
+				lambda opt: mime in (opt.get("mimes") or [])
+			)
+	if len(filters) < 1:
+		return options
+	filters.append(
+		lambda opt: opt.get("show-allways")
+	)
+	new_options = {}
+	for option in options:
+		for filt in filters:
+			if filt(options[option]):
+				new_options[option] = options[option]
+				continue
+	return new_options
 
-VIDEO_OPT = {"mpv": (["mpv"], True)}
-IMAGES_OPT = {
-	"gthumb": (["gthumb"], True),
-	"drawing": (["drawing"], True),
-	"gimp": (["gimp"], True),
-}
-AUDIO_OPT = {}
-VECTOR_OPT = {
-	#"corepaint": (["flatpak", "run", "org.cubocore.CorePaint"], True),	
-	"inkscape": (["flatpak", "run", "org.inkscape.Inkscape"], True),	
-}
+def process_options(options, conf):
+	for option in options:
+		params = options[option]
+		if "cmd" in params:
+			if isinstance(params["cmd"], str):
+				params["cmd"] = [params["cmd"]]
+		else:
+			params["cmd"] = [option]
+		if params.get("terminal"):
+			params["cmd"] = with_term(params["cmd"])
+			del params["terminal"]
+		if isinstance(params.get("mimes"), str):
+			params["mimes"] = [params["mimes"]]
+		if params.get("mime-filters"):
+			if not params.get("mimes"):
+				params["mimes"] = []
+			filters = params["mime-filters"]
+			if isinstance(filters, str):
+				filters = [filters]
+			for filt in filters:
+				params["mimes"] += conf["mime-filters"][filt]
+			del params["mime-filters"]
+	return options
 
-def scan_vscode():
-	return {
-		"code": (["runcode"], True),
-	}
-
-def scan_fox(name = "mozilla/firefox", flatname = "org.mozilla.firefox", menu = "ff"):
-	FOX=flatname
-	FOX_PROFILES_DIR = Path(f"~/.var/app/{FOX}/cache/{name}/").expanduser()
+def get_fox_options(name = "mozilla/firefox", flatname = "org.mozilla.firefox", menu = "firefox"):
+	FOX_PROFILES_DIR = Path(f"~/.var/app/{flatname}/cache/{name}/").expanduser()
 	ret = {}
 	try:
 		ret = reduce(
 			lambda d, p: d | {
 				menu+" "+p.split(".", 1)[1]:
-				(["flatpak", "run", FOX, "-P", p.split(".", 1)[1]], True, {"GDK_DPI_SCALE": "1.5"})
+				{
+					"cmd": ["flatpak", "run", flatname, "-P", p.split(".", 1)[1]],
+					"env": {"GDK_DPI_SCALE": "1.5"},
+					"mime-filters": BROWSER_MIMES,
+					"regexps": BROWSER_REGEXP,
+				}
 			},
-			os.listdir(FOX_PROFILES_DIR),
+			listdir(FOX_PROFILES_DIR),
 			ret
 		)
 	except FileNotFoundError as e:
 		print(e)
-	ret |= {f"new {menu}": (["flatpak", "run", FOX, "--ProfileManager"], False)}
-	return ret
-
-def scan_wolf():
-	return scan_fox("librewolf", "io.gitlab.librewolf-community", "lw")
-
-def scan_chrome():
-	return {
-		"chromium": (["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"], True),
-		# TODO: Add oneshot chromium via boxxy
-		"chromium-oneshot": (["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"], True),
+	ret |= {
+		f"new {menu}": {
+			"cmd": ["flatpak", "run", flatname, "--ProfileManager"],
+			"mime-filters": BROWSER_MIMES,
+			"env": {"GDK_DPI_SCALE": "1.5"},
+			"no-term": True,
+			"regexps": BROWSER_REGEXP,
+		}
 	}
-
-def scan_ssh():
-	ret = {}
-	hosts = [
-		"/etc/ssh/ssh_known_hosts",
-		os.getenv("HOME")+"/.ssh/known_hosts",
-	]
-	for h in hosts:
-		try:
-			with open(h, "r") as file:
-				for line in file:
-					host = line.split(" ", 1)[0]
-					ret[f"ssh {host}"] = (with_term(["ssh", host]), True)
-		except FileNotFoundError:
-			pass
 	return ret
 
-def is_scheme_browser(text):
-	regexp = re.compile("(((http)|(https)|(ws)|(wss))://)|(.*\\.pdf$)", re.IGNORECASE)
-	return regexp.match(text)
+def get_wolf_options():
+	return get_fox_options(
+		"librewolf",
+		"io.gitlab.librewolf-community",
+		"librewolf",
+	)
 
-def is_scheme_pdf(text):
-	regexp = re.compile(".*\\.pdf$", re.IGNORECASE)
-	return regexp.match(text)
-
-def is_scheme_video(text):
-	regexp = re.compile(".*\\.((mp3)|(mp4))$", re.IGNORECASE)
-	return regexp.match(text)	
-
-def is_scheme_image(text):
-	regexp = re.compile(".*\\.((png)|(jpg)|(jpeg)|(bmp)|(gif)|(webp)|(psd)|(xcf)|(xd)|(cdr)|(fig)|(raw)|(tga))$", re.IGNORECASE)
-	return regexp.match(text)
-
-def is_scheme_vector(text):
-	regexp = re.compile(".*\\.svg$", re.IGNORECASE)
-	return regexp.match(text)
-
-def is_scheme_audio(text):
-	return False # TODO
+def get_chrome_options():
+	return {
+		"chromium": {
+			"cmd": ["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"],
+			"mime-filters": BROWSER_MIMES,
+			"regexps": BROWSER_REGEXP,
+		},
+		# TODO: Add oneshot chromium via boxxy
+		"chromium-oneshot": {
+			"cmd": ["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"],
+			"mime-filters": BROWSER_MIMES,
+			"regexps": BROWSER_REGEXP,
+		},
+	}
 
 def rofi(prompt, stdin):
 	cmd = ["rofi", "-dmenu", "-p", prompt]
@@ -143,70 +139,44 @@ def rofi(prompt, stdin):
 		return res.stdout.decode("utf-8").replace("\n", "")
 	return ""
 
-if __name__ == "__main__":
-	while True:
-		entries = {}
-		if len(sys.argv) < 2: 
-			entries |= GENERIC_OPTIONS \
-			| scan_wolf() \
-			| scan_fox() \
-			| scan_chrome() \
-			| scan_vscode() \
-			| PDF_OPT \
-			| SUBLIME_OPT \
-			| VIDEO_OPT \
-			| IMAGES_OPT \
-			| AUDIO_OPT \
-			| VECTOR_OPT \
-			| scan_ssh()
+conf = yaml_load(CONFIG)
+
+while True:
+	options = process_options(
+		conf["options"] \
+		| get_fox_options() \
+		| get_wolf_options() \
+		| get_chrome_options() ,
+		conf
+	)
+
+	prompt = "app"
+
+	if len(sys.argv) > 1:
+		options = filter_by(options, sys.argv[1])
+		prompt = f"Open {sys.argv[1]} with"
+
+	selection = rofi(prompt, "\n".join(options.keys()))
+
+	if selection == "":
+		print("canceled by user")
+		break
+
+	if selection in options:
+		cmd = options[selection]["cmd"]
+		if len(sys.argv) > 1 and sys.argv[1]:
+			cmd += [sys.argv[1]]
+		if "env" in options[selection]:
+			nenvs = options[selection]["env"]
+			for name in nenvs:
+				environ[name] = nenvs[name]
+
+
+		if options[selection].get("no-term"):
+			print("Running", " ".join(cmd))
+			subprocess.run(cmd)
+			continue
 		else:
-			if is_scheme_browser(sys.argv[1]):
-				entries |= scan_wolf() | scan_chrome() | scan_fox()
-			if is_scheme_pdf(sys.argv[1]):
-				entries |= PDF_OPT
-			if is_scheme_video(sys.argv[1]):
-				entries |= VIDEO_OPT
-				entries |= scan_wolf() | scan_chrome() | scan_fox()
-			if is_scheme_audio(sys.argv[1]):
-				entries |= AUDIO_OPT
-				entries |= VIDEO_OPT
-				entries |= scan_wolf() | scan_chrome() | scan_fox()
-			if is_scheme_image(sys.argv[1]):
-				entries |= IMAGES_OPT
-				entries |= VIDEO_OPT
-				entries |= scan_wolf() | scan_chrome() | scan_fox()
-			if is_scheme_vector(sys.argv[1]):
-				entries |= VECTOR_OPT
-				entries |= IMAGES_OPT
-				entries |= scan_wolf() | scan_chrome() | scan_fox()
-		entries |= SUBLIME_OPT
-		entries |= FILE_MANAGER_OPT
-		options = "\n".join(entries.keys())
-		for bo in BANNED_OPTIONS:
-			options = options.replace(bo, "")
-		if options == "":
-			print("No options avalable")
+			print("Launching", " ".join(cmd))
+			subprocess.Popen(cmd, start_new_session=True)
 			break
-		prompt = "app"
-		if len(sys.argv) > 1:
-			prompt = f"Open {sys.argv[1]} with"
-		selection = rofi(prompt, options)
-		if selection == "":
-			print("canceled by user")
-			break
-		if selection in entries:
-			cmd = entries[selection][0]
-			if len(sys.argv) > 1 and sys.argv[1]:
-				cmd += [sys.argv[1]]
-			if len(entries[selection]) > 2:
-				nenvs = entries[selection][2]
-				for name in nenvs:
-					os.environ[name] = nenvs[name]
-			if entries[selection][1]:
-				print("Launching", " ".join(cmd))
-				subprocess.Popen(cmd, start_new_session=True)
-				break
-			else:
-				print("Running", " ".join(cmd))
-				subprocess.run(cmd)
-				continue
