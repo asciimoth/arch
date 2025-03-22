@@ -15,6 +15,10 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export GDK_DPI_SCALE=1.1
 export GTK_THEME=Adwaita:dark
 
+export RUSTUP_HOME=$HOME/.local/rustup
+export CARGO_HOME=$HOME/.local/cargo
+export RUSTUP_TOOLCHAIN=stable
+
 alias setup="$HOME/config/setup.py && . ~/.bashrc"
 alias open="xdg-open"
 alias fkill="ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -9"
@@ -47,6 +51,7 @@ alias nix="sudo mkdir -p /nix/var/nix/daemon-socket && NIXPKGS_ALLOW_UNFREE=1 ni
 alias nsh="nix shell --impure"
 alias nopt="sudo nix-store --optimise"
 alias ngc="sudo nix-collect-garbage -d"
+alias ble="bluetoothctl"
 
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
@@ -68,7 +73,12 @@ if [[ "$(command -v carapace)" != "" ]]; then
 	source <(carapace _carapace)
 fi
 
-eval "$(zoxide init bash)"
+if command -v "zoxide" 2>&1 > /dev/null
+then
+	eval "$(zoxide init bash)"
+else
+	alias z="cd"
+fi
 
 function __secondarg() {
 	echo -n "$2"
@@ -91,7 +101,11 @@ function n() {
 
 alias nnn="n"
 alias n="n"
-alias cd="n"
+
+if command -v "nnn" 2>&1 > /dev/null
+then
+	alias cd="n"
+fi
 
 alias nnn-update-plugins="sh -c \"\$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)\""
 
@@ -120,20 +134,25 @@ PS1="\$(prompt)\n$ "
 PS2="$ "
 
 
-_direnv_hook() {
-  local previous_exit_status=$?;
-  trap -- '' SIGINT;
-  eval "$("/usr/bin/direnv" export bash)";
-  trap - SIGINT;
-  return $previous_exit_status;
-};
+if [ -e "/usr/bin/direnv" ]; then
+	_direnv_hook() {
+	  local previous_exit_status=$?;
+	  trap -- '' SIGINT;
+	  eval "$("/usr/bin/direnv" export bash)";
+	  trap - SIGINT;
+	  return $previous_exit_status;
+	};
 
-if [[ ";${PROMPT_COMMAND[*]:-};" != *";_direnv_hook;"* ]]; then
-  if [[ "$(declare -p PROMPT_COMMAND 2>&1)" == "declare -a"* ]]; then
-    PROMPT_COMMAND=(_direnv_hook "${PROMPT_COMMAND[@]}")
-  else
-    PROMPT_COMMAND="_direnv_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
-  fi
+	if [[ ";${PROMPT_COMMAND[*]:-};" != *";_direnv_hook;"* ]]; then
+	  if [[ "$(declare -p PROMPT_COMMAND 2>&1)" == "declare -a"* ]]; then
+	    PROMPT_COMMAND=(_direnv_hook "${PROMPT_COMMAND[@]}")
+	  else
+	    PROMPT_COMMAND="_direnv_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+	  fi
+	fi
 fi
 
-eval "$(zoxide init bash)"
+if command -v "zoxide" 2>&1 > /dev/null
+then
+	eval "$(zoxide init bash)"
+fi
