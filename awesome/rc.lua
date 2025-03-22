@@ -588,6 +588,7 @@ awful.rules.rules = {
           "TelegramDesktop",
           "obsidian",
           "firefox",
+          "eu.betterbird.Betterbird",
         },
         name = { },
         role = { }
@@ -606,7 +607,11 @@ awful.rules.rules = {
     }, ]]--
 
    -- Set Picture-In-Picture windows start properties
-    { rule = { class = "Picture-in-Picture" },
+    {
+      rule = {
+        class = "Picture-in-Picture",
+        name = "Picture-in-Picture",
+      },
       properties = {
          floating = true,
          ontop = true,
@@ -641,6 +646,7 @@ awful.rules.rules = {
         name = {
           "Event Tester",  -- xev.
           -- "Firefox - Choose User Profile",
+          "Picture-in-Picture",
         },
         role = {
           "AlarmWindow",  -- Thunderbird's calendar.

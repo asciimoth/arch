@@ -40,3 +40,7 @@ pkgs:
       name: org.inkscape.Inkscape
       script: inkscape
       device: all
+  thunderbird:
+      repo: flathub
+      name: eu.betterbird.Betterbird
+      script: thunderbird
