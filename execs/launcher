@@ -111,11 +111,14 @@ def get_fox_options(name = "mozilla/firefox", flatname = "org.mozilla.firefox", 
 	return ret
 
 def get_wolf_options():
-	return get_fox_options(
+	ret = get_fox_options(
 		"librewolf",
 		"io.gitlab.librewolf-community",
 		"librewolf",
 	)
+	if "librewolf default" in ret:
+		del ret["librewolf default"]
+	return ret
 
 def get_chrome_options():
 	return {
