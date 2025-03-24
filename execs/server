@@ -15,7 +15,8 @@ function help() {
 	echo "  up: decrypt vault, do scrub, launch services"
 	echo "  mount: force mount local NFS share (/pinas2)"
 	echo "  unmount: force unmount local NFS share (/pinas2)"
-	echo "  clonepass [username]: clon passwordstore repo"
+	echo "  clone [repo]: clone repo from server"
+	echo "  clonepass [username]: clone passwordstore repo"
 	echo "    server clonepass moth"
 	echo "    server clonepass toast"
 }
