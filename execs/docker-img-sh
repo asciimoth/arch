@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DSHELL="sh"
+if [[ "$2" != "" ]]; then
+	DSHELL="$2"
+fi
+
+docker run --rm -it "$1" "$DSHELL"
