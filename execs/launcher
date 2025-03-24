@@ -146,10 +146,10 @@ conf = yaml_load(CONFIG)
 
 while True:
 	options = process_options(
-		conf["options"] \
-		| get_fox_options() \
+		get_fox_options() \
 		| get_wolf_options() \
-		| get_chrome_options() ,
+		| get_chrome_options() \
+		| conf["options"],
 		conf
 	)
 
@@ -167,13 +167,13 @@ while True:
 
 	if selection in options:
 		cmd = options[selection]["cmd"]
-		if len(sys.argv) > 1 and sys.argv[1]:
-			cmd += [sys.argv[1]]
+		if len(sys.argv) > 1:
+			cmd += sys.argv[1:]
+
 		if "env" in options[selection]:
 			nenvs = options[selection]["env"]
 			for name in nenvs:
 				environ[name] = nenvs[name]
-
 
 		if options[selection].get("no-term"):
 			print("Running", " ".join(cmd))

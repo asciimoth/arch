@@ -158,6 +158,8 @@ options:
         mime-filters: document
     okular:
         mime-filters: document
+    libreoffice:
+        mime-filters: document
     sublime:
         cmd: subl
         show-allways: true
