@@ -1,0 +1,16 @@
+#!/bin/bash
+
+modified_args=()
+
+# Iterate over each argument
+for arg in "$@"; do
+    # Check if the argument contains '#'
+    if [[ "$arg" != *"#"* ]]; then
+        # Prepend nixpkgs# if no hash found
+        arg="nixpkgs#$arg"
+    fi
+    # Add to modified arguments array
+    modified_args+=("$arg")
+done
+
+nix shell --impure "${modified_args[@]}"
