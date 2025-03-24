@@ -150,7 +150,7 @@ def is_cmd_available(cmd):
 
 def setup_user(user):
 	header(f"[ Setting up user {user} ]")
-	add_user_to_groups(user, split("audio wheel"))
+	add_user_to_groups(user, split("audio wheel docker"))
 
 def setup_hosts():
 	header(f"[ Setting up user hosts file ]")
@@ -318,9 +318,9 @@ def setservices():
 		cmd = [
 			ESCALATE_CMD,
 			"systemctl",
-			"enable" if system[service] else "disable"
+			"enable" if system[service] else "disable",
 			"--now",
-			service
+			service,
 		]
 		print(" ".join(cmd))
 		subprocess.run(cmd)
@@ -329,7 +329,7 @@ def setservices():
 		cmd = [
 			"systemctl",
 			"--user",
-			"enable" if users[service] else "disable"
+			"enable" if users[service] else "disable",
 			"--now",
 			service
 		]
