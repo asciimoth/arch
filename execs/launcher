@@ -144,6 +144,11 @@ def rofi(prompt, stdin):
 
 conf = yaml_load(CONFIG)
 
+if not sys.stdin.isatty():
+	stdin = sys.stdin.readline().strip()
+	if stdin:
+		sys.argv.append(stdin)
+
 while True:
 	options = process_options(
 		get_fox_options() \
