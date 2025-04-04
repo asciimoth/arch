@@ -19,6 +19,9 @@ export RUSTUP_HOME=$HOME/.local/rustup
 export CARGO_HOME=$HOME/.local/cargo
 export RUSTUP_TOOLCHAIN=stable
 
+HISTSIZE=1000000
+HISTFILESIZE=1000000
+
 alias setup="$HOME/config/setup.py && . ~/.bashrc"
 alias open="xdg-open"
 alias fkill="ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -9"
