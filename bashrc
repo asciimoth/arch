@@ -52,6 +52,7 @@ alias nsh="nshell"
 alias nopt="sudo nix-store --optimise"
 alias ngc="sudo nix-collect-garbage -d"
 alias ble="bluetoothctl"
+alias pwgen="pwgen -s 30 1"
 
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
