@@ -148,6 +148,7 @@ options:
     terminal:
         cmd: []
         terminal: true
+    qpwgraph: {}
     btop:
         terminal: true
     gping:
