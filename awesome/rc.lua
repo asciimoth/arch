@@ -589,6 +589,9 @@ awful.rules.rules = {
           "obsidian",
           "firefox",
           "eu.betterbird.Betterbird",
+          "libreoffice-writer",
+          "libreoffice-draw",
+          "Zathura",
         },
         name = { },
         role = { }
