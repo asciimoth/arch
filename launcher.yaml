@@ -148,6 +148,9 @@ options:
     terminal:
         cmd: []
         terminal: true
+    steam:
+        env:
+            GDK_DPI_SCALE: "1.5"
     qpwgraph: {}
     btop:
         terminal: true
@@ -183,6 +186,9 @@ options:
         show-allways: true
     code:
         cmd: runcode
+        show-allways: true
+    zed:
+        cmd: runz
         show-allways: true
     nnn:
         terminal: true

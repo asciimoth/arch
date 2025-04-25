@@ -592,6 +592,7 @@ awful.rules.rules = {
           "libreoffice-writer",
           "libreoffice-draw",
           "Zathura",
+          "dev.zed.Zed",
         },
         name = { },
         role = { }
