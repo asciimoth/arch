@@ -60,5 +60,9 @@
         "phpcs.xml": true,
     },
     "workbench.colorTheme": "Monokai++ Unified",
-    "git.confirmSync": false
+    "git.confirmSync": false,
+    "window.zoomPerWindow": false,
+    "window.zoomLevel": 2,
+    "window.commandCenter": false,
+    "explorer.confirmDragAndDrop": false
 }

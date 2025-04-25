@@ -8,4 +8,9 @@
 - jnoortheen.nix-ide
 - ms-ceintl.vscode-language-pack-ru
 - wayou.vscode-todo-highlight
-- ms-vscode.wasm-wasi-core
+#- ms-vscode.wasm-wasi-core
+- golang.go
+- tamasfe.even-better-toml
+- rust-lang.rust-analyzer
+- ms-azuretools.vscode-docker
+- myriad-dreamin.tinymist
