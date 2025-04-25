@@ -26,3 +26,5 @@
 "~/.config/mimeapps.list": mimeapps.list
 
 "~/.config/launcher.yaml": launcher.yaml
+
+"~/.config/zed": zed
