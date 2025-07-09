@@ -73,6 +73,10 @@ htop
 btop
 duf
 gnupg
+sequoia-sq
+openpgp-card-tools
+rsop-oct
+rsop
 pass
 pass-otp
 rofi-pass
@@ -127,6 +131,7 @@ yubikey-manager
 yubikey-touch-detector
 
 python3
+pyenv
 
 pwgen
 inotify-tools
@@ -156,3 +161,36 @@ yt-dlp
 steam
 
 zed
+
+pcsclite
+opensc
+pcsc-tools
+
+discord
+
+zip
+7zip
+
+ollama
+
+lua
+fennel
+lua-lgi
+vte4
+
+mesa-utils
+chromium
+
+yazi
+
+zig
+
+postgresql-libs
+
+rclone
+
+torbrowser-launcher
+
+pass-otp
+
+neovim

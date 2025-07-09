@@ -3,6 +3,7 @@ system:
   nix-daemon: true
   bluetooth.service: true
   docker.service: true
+  pcscd.service: true
 user:
   wireplumber.service: true
   pipewire-pulse.service: true

@@ -123,15 +123,23 @@ def get_wolf_options():
 def get_chrome_options():
 	return {
 		"chromium": {
+			"cmd": ["chromium", "--high-dpi-support=1", "--force-device-scale-factor=1.5"],
+			"mime-filters": BROWSER_MIMES,
+			"regexps": BROWSER_REGEXP,
+			"env": {"GDK_DPI_SCALE": "1.5"},
+		},
+		"uchromium": {
 			"cmd": ["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"],
 			"mime-filters": BROWSER_MIMES,
 			"regexps": BROWSER_REGEXP,
+			"env": {"GDK_DPI_SCALE": "1.5"},
 		},
 		# TODO: Add oneshot chromium via boxxy
-		"chromium-oneshot": {
+		"uchromium-oneshot": {
 			"cmd": ["flatpak", "run", "io.github.ungoogled_software.ungoogled_chromium"],
 			"mime-filters": BROWSER_MIMES,
 			"regexps": BROWSER_REGEXP,
+			"env": {"GDK_DPI_SCALE": "1.5"},
 		},
 	}
 

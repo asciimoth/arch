@@ -19,7 +19,6 @@
     "editor.renderLineHighlight": "all",
     "editor.folding": true,
     "workbench.editor.showIcons": false,
-    "workbench.editor.enablePreview": false,
     "workbench.editor.enablePreviewFromQuickOpen": false,
     "workbench.editor.pinnedTabSizing": "compact",
     "workbench.editor.tabSizing": "shrink",
@@ -62,7 +61,8 @@
     "workbench.colorTheme": "Monokai++ Unified",
     "git.confirmSync": false,
     "window.zoomPerWindow": false,
-    "window.zoomLevel": 2,
     "window.commandCenter": false,
-    "explorer.confirmDragAndDrop": false
+    "explorer.confirmDragAndDrop": false,
+    "workbench.editor.enablePreview": false,
+    "window.zoomLevel": 2
 }

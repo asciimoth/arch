@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cd ~
+
+if [[ "$1" == "config" ]]; then
+	"$GTERM" ~/.config/nvim/proj.sh ~/.config/nvim
+	exit 0
+fi
+
+PROJ=$(fd -t d -E __pycache__ -E vendor | rofi -dmenu -p "nvim project")
+
+if [[ "$PROJ" == "" ]]; then
+	echo "No project selected"
+	exit 1
+fi
+
+"$GTERM" ~/.config/nvim/proj.sh "$PROJ"

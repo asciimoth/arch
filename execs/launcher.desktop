@@ -1,4 +1,4 @@
 [Desktop Entry]
 Name=launcher
-Exec=launcher
+Exec=launcher %U
 Type=Application

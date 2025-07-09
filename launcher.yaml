@@ -190,12 +190,21 @@ options:
     zed:
         cmd: runz
         show-allways: true
+    proj:
+        cmd: runp
+        show-allways: true
+    proj-conf:
+        cmd: [runp, config]
+        show-allways: true
     nnn:
         terminal: true
         cmd: nn
         show-allways: true
     nautilus:
         show-allways: true
+    discord:
+        env:
+            GDK_DPI_SCALE: "1.5"
     gthumb:
         mime-filters: image
     drawing:

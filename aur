@@ -2,3 +2,5 @@ carapace-bin
 cantata
 sublime-text-4
 asciinema-agg-bin
+pyenv-virtualenv
+rclone-browser

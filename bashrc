@@ -22,6 +22,7 @@ export RUSTUP_TOOLCHAIN=stable
 HISTSIZE=1000000
 HISTFILESIZE=1000000
 
+alias c="cd"
 alias setup="$HOME/config/setup.py && . ~/.bashrc"
 alias open="xdg-open"
 alias fkill="ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -9"
@@ -57,11 +58,26 @@ alias ngc="sudo nix-collect-garbage -d"
 alias ble="bluetoothctl"
 alias pwgen="pwgen -s 30 1"
 alias upgrade="sudo pacman -Syu"
+alias todo="rg TODO"
+alias newpyenv="python -m venv"
+alias loadenv="set -a; source .env; set +a"
+
+alias nvim="~/.config/nvim/nvim.sh"
+alias nvproj="~/.config/nvim/proj.sh"
 
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 gpg-connect-agent updatestartuptty /bye > /dev/null
+
+function NEWGPGENV() {
+	export GNUPGHOME="$(mktemp -d)"
+}
+
+function loadpyenv() {
+	local PTH="$1"
+	source "$PTH/bin/activate"
+}
 
 complete -c man which
 complete -cf sudo
@@ -107,10 +123,10 @@ function n() {
 alias nnn="n"
 alias n="n"
 
-if command -v "nnn" 2>&1 > /dev/null
-then
-	alias cd="n"
-fi
+#if command -v "nnn" 2>&1 > /dev/null
+#then
+#	alias cd="n"
+#fi
 
 alias nnn-update-plugins="sh -c \"\$(curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs)\""
 
@@ -156,6 +172,10 @@ if [ -e "/usr/bin/direnv" ]; then
 	  fi
 	fi
 fi
+
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
 
 if command -v "zoxide" 2>&1 > /dev/null
 then

@@ -28,3 +28,5 @@
 "~/.config/launcher.yaml": launcher.yaml
 
 "~/.config/zed": zed
+
+"~/.gnupg/scdaemon.conf": gpg/scdaemon.conf

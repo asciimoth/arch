@@ -285,10 +285,23 @@ def setup_flatpak():
 	chmod("/flatpak-aliases", 755)
 	for pkg in flatpak["pkgs"]:
 		info = flatpak["pkgs"][pkg]
+		print(pkg)
 		if "device" in info:
 			subprocess.run(
 				split(f"{ESCALATE_CMD} flatpak override --device={info["device"]}")+[info["name"]]
 			)
+		if info.get("gl"):
+			print(f"ENABLING GL FOR {info["name"]}")
+			subprocess.run(
+				split(f"{ESCALATE_CMD} flatpak override --filesystem=host-os")+[info["name"]]
+			)
+		if "env" in info:
+			print(info["env"])
+			for key in info["env"]:
+				value = info["env"][key]
+				subprocess.run(
+					split(f"{ESCALATE_CMD} flatpak override")+[f"--env={key}={value}", info["name"]]
+				)
 		if "script" in info:
 			cmd = f"#!/bin/bash\nflatpak run {info["name"]} $@"
 			script = path.join("/flatpak-aliases", info["script"])

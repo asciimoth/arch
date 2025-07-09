@@ -13,10 +13,18 @@ pkgs:
       name: org.mozilla.firefox
       script: firefox
       device: all
+      gl: true
+      env:
+        LIBVA_DRIVER_NAME: "nvidia"
+        LIBVA_DRIVERS_PATH: "/run/host/usr/lib64/dri"
+        LIBVA_MESSAGING_LEVEL: 1
+        MOZ_DISABLE_RDD_SANDBOX: 1
+        NVD_BACKEND: "direct"
+        MOZ_X11_EGL: 1
   chromium:
       repo: flathub
       name: io.github.ungoogled_software.ungoogled_chromium
-      script: chromium
+      script: ungoogled_chromium
       device: all
   telegram:
       repo: flathub
