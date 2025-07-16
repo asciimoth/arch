@@ -194,3 +194,17 @@ torbrowser-launcher
 pass-otp
 
 neovim
+
+tinyxxd
+
+lua-jsregexp
+lua-language-server
+
+go
+gopls
+
+vscode-css-languageserver
+vscode-html-languageserver
+vscode-json-languageserver
+eslint-language-server
+eslint

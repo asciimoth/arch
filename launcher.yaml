@@ -148,6 +148,9 @@ options:
     terminal:
         cmd: []
         terminal: true
+    nvim:
+        cmd: ["sh", "-c", "~/.config/nvim/nvim.sh"]
+        terminal: true
     steam:
         env:
             GDK_DPI_SCALE: "1.5"
