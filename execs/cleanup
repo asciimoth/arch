@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+import os
+import functools
+import subprocess
+import shutil
+
+HOME=os.environ["HOME"]
+
+def get_total_used_bytes():
+    """
+    Returns the total used space (in bytes) across all locally‐mounted block devices
+    (i.e. mounts whose source begins with '/dev/'), ignoring network and special filesystems.
+    """
+    used = 0
+    seen_mounts = set()
+
+    with open('/proc/mounts', 'r') as mounts:
+        for line in mounts:
+            src, mnt_point = line.split()[:2]
+
+            # only consider physical block devices
+            if not src.startswith('/dev/'):
+                continue
+
+            if mnt_point == "/boot":
+                continue
+
+            # avoid double‐counting duplicate mountpoints
+            if mnt_point in seen_mounts:
+                continue
+            seen_mounts.add(mnt_point)
+
+            try:
+                st = os.statvfs(mnt_point)
+            except OSError:
+                # skip mounts we can’t access
+                continue
+
+            # total blocks * block size
+            total = st.f_blocks * st.f_frsize
+            # available to non-privileged users
+            free  = st.f_bavail * st.f_frsize
+
+            used += (total - free)
+
+    return used
+
+def human_readable_bytes(num_bytes: int, suffix: str = 'B') -> str:
+    """
+    Convert a byte count into a human-readable string using 1024-based units.
+    e.g. 1024 -> '1.0 KiB', 1048576 -> '1.0 MiB'
+    """
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num_bytes) < 1024.0:
+            return f"{num_bytes:.10f} {unit}{suffix}"
+        num_bytes /= 1024.0
+    return f"{num_bytes:.1f} Yi{suffix}"
+
+def disk_usage_report(func):
+    """
+    Decorator that prints disk usage before and after the wrapped function,
+    plus the delta, and the function’s name.
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        before = get_total_used_bytes()
+        result = func(*args, **kwargs)
+        after = get_total_used_bytes()
+        delta = after - before
+
+        name = func.__name__
+        print(
+            f"[{name}] Before: {human_readable_bytes(before)}\n"
+            f"[{name}] After : {human_readable_bytes(after)}\n"
+            f"[{name}] Delta : {human_readable_bytes(delta)}\n"
+        )
+        return result
+    return wrapper
+
+def repos(root_path):
+    """
+    Yield all directories under root_path that contain a .git folder.
+
+    :param root_path: Path to start searching from.
+    :yields: Absolute paths to git repository roots.
+    """
+    for dirpath, dirnames, filenames in os.walk(root_path):
+        if os.path.basename(dirpath).startswith('.'):
+            # Prevent os.walk from recursing into hidden dirs
+            dirnames.clear()
+            continue
+
+        if '.git' in dirnames:
+            yield dirpath
+            # Don’t recurse into the .git directory itself
+            dirnames.remove('.git')
+
+def delete(path):
+    try:
+        shutil.rmtree(path)
+    except Exception:
+        pass  # ignore any deletion errors
+
+def home(path):
+    return os.path.join(HOME, path)
+
+@disk_usage_report
+def make_clean():
+    for repo in repos(HOME):
+        for cmd in (['make', 'clean'], ['just', 'clean']):
+            try:
+                subprocess.run(
+                    cmd,
+                    cwd=repo,
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+            except Exception:
+                # Ignore any exceptions and continue
+                pass
+
+@disk_usage_report
+def rust():
+    """
+    For each Git repo under root_path, if it contains 'Cargo.toml' and a 'target' subdirectory,
+    delete the 'target' directory to clean Rust build artifacts.
+    """
+    for repo_path in repos(HOME):
+        cargo_file = os.path.join(repo_path, 'Cargo.toml')
+        target_dir = os.path.join(repo_path, 'target')
+        if os.path.isfile(cargo_file) and os.path.isdir(target_dir):
+            try:
+                shutil.rmtree(target_dir)
+            except Exception:
+                pass  # ignore any deletion errors
+    delete(home(".cargo"))
+
+@disk_usage_report
+def golang():
+    delete(home(".cache/go-build"))
+    delete(home(".cache/go"))
+    delete(home(".cache/goimports"))
+    delete(home(".cache/gopls"))
+    try:
+        subprocess.run(
+            ["go", "clean", "-cache", "-modcache", "-fuzzcache"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception:
+        # Ignore any exceptions and continue
+        pass
+
+@disk_usage_report
+def zig():
+    delete(home(".cache/zig"))
+
+
+@disk_usage_report
+def typst():
+    delete(home(".cache/typst"))
+
+@disk_usage_report
+def js():
+    delete(home(".cache/typescript"))
+    # TODO: Find and delete all .node_modules
+
+
+@disk_usage_report
+def python():
+    delete(home(".cache/pip"))
+    # TODO: Find and deleta all local venvs
+
+@disk_usage_report
+def editors():
+    delete(home(".cache/nvim"))
+    delete(home(".cache/sublime-text"))
+    delete(home(".cache/zed"))
+
+@disk_usage_report
+def other_cache():
+    delete(home(".cache/thumbnails"))
+    delete(home(".cache/gnome-desktop-thumbnailer"))
+    delete(home(".cache/mpv"))
+    delete(home(".cache/MusicBrainz"))
+    delete(home(".cache/Microsoft"))
+    delete(home(".cache/mesa_shader_cache"))
+    delete(home(".cache/mesa_shader_cache_db"))
+    delete(home(".cache/kitty"))
+    delete(home(".cache/ImageMagick"))
+    delete(home(".cache/huggingface"))
+    delete(home(".cache/gstreamer-1.0"))
+    delete(home(".cache/glow"))
+    delete(home(".cache/gimp"))
+    delete(home(".cache/fontconfig"))
+    delete(home(".cache/flatpak"))
+    delete(home(".cache/flameshot"))
+    delete(home(".cache/distrobox"))
+    delete(home(".cache/carapace"))
+    delete(home(".cache/chromium"))
+    delete(home(".cache/blender"))
+
+@disk_usage_report
+def docker():
+    try:
+        subprocess.run(
+            "docker system prune -a -f --volumes".split(" "),
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception:
+        # Ignore any exceptions and continue
+        pass
+    pass
+
+@disk_usage_report
+def nix():
+    delete(home(".cache/nix"))
+    # Delete all local nix envs
+    for repo_path in repos(HOME):
+        for dirpath, dirnames, filenames in os.walk(repo_path):
+            # Skip .git internals
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
+            for name in filenames:
+                file_path = os.path.join(dirpath, name)
+                if os.path.islink(file_path):
+                    try:
+                        target = os.readlink(file_path)
+                        # Remove if pointing into /nix/store or is dangling
+                        if target.startswith('/nix/store') or not os.path.exists(os.path.join(os.path.dirname(file_path), target)):
+                            os.unlink(file_path)
+                    except Exception:
+                        pass  # Ignore readlink/unlink errors
+    # Run gc
+    try:
+        subprocess.run(
+            "sudo nix --extra-experimental-features nix-command store gc".split(" "),
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        subprocess.run(
+            "sudo nix --extra-experimental-features nix-command store optimise".split(" "),
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception as e:
+        # Ignore any exceptions and continue
+        pass
+
+@disk_usage_report
+def git():
+    """
+    For each Git repository under root_path, run commands that optimize storage:
+    - git gc --aggressive --prune=now
+    - git repack -a -d
+    """
+    for repo_path in repos(HOME):
+        for cmd in (
+            ['git', 'gc', '--aggressive', '--prune=now'],
+            ['git', 'repack', '-a', '-d']
+        ):
+            try:
+                subprocess.run(
+                    cmd,
+                    cwd=repo_path,
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+            except Exception as e:
+                # Ignore any exceptions and continue
+                pass
+
+@disk_usage_report
+def logs():
+    for cmd in (
+            "sudo journalctl --vacuum-time=1d",
+            # TODO: Cleanup text logs
+    ):
+        try:
+            subprocess.run(
+                cmd.split(" "),
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        except Exception as e:
+            # Ignore any exceptions and continue
+            pass
+
+@disk_usage_report
+def aur():
+    delete(home(".cache/yarn"))
+    delete(home(".cache/yay"))
+
+@disk_usage_report
+def arch():
+    try:
+        subprocess.run(
+            'sudo pacman -Qdtq | sudo pacman --noconfirm -Rns -',
+            shell=True,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        subprocess.run(
+            "sudo pacman -Scc".split(" "),
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception as e:
+        # Ignore any exceptions and continue
+        pass
+
+@disk_usage_report
+def total():
+    make_clean()
+    rust()
+    golang()
+    zig()
+    typst()
+    js()
+    python()
+    editors()
+    other_cache()
+    docker()
+    nix()
+    git()
+    logs()
+    aur()
+    arch()
+
+if __name__ == '__main__':
+    total()
