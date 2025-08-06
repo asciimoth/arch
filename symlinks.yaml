@@ -30,3 +30,6 @@
 "~/.config/zed": zed
 
 "~/.gnupg/scdaemon.conf": gpg/scdaemon.conf
+
+"~/.config/systemd/user/ollama.service": ollama.service
+

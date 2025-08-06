@@ -65,6 +65,11 @@ alias loadenv="set -a; source .env; set +a"
 alias nvim="~/.config/nvim/nvim.sh"
 alias nvproj="~/.config/nvim/proj.sh"
 
+alias ollama-status="systemctl --user status ollama.service"
+alias ollama-start="systemctl --user start ollama.service"
+alias ollama-stop="systemctl --user stop ollama.service"
+alias ollama-restart="systemctl --user restart ollama.service"
+
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent

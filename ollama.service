@@ -1,0 +1,18 @@
+[Unit]
+Description=Ollama AI Model Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Run Ollama in "serve" mode to host the local AI model API
+# Adjust the executable path if Ollama is installed elsewhere
+ExecStart=/usr/bin/ollama serve
+# Set the working directory to your home, or wherever you store Ollama configs/models
+WorkingDirectory=%h
+# Restart if it crashes
+Restart=on-failure
+RestartSec=5
+
+[Install]
+# Start this service when the user logs in
+WantedBy=default.target
