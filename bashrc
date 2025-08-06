@@ -19,6 +19,10 @@ export RUSTUP_HOME=$HOME/.local/rustup
 export CARGO_HOME=$HOME/.local/cargo
 export RUSTUP_TOOLCHAIN=stable
 
+export AI_MODEL_DUMB="qwen3:0.6b"
+export AI_MODEL_MEDIUM="qwen3:8b"
+export AI_MODEL_SMART="gpt-oss:20b"
+
 HISTSIZE=1000000
 HISTFILESIZE=1000000
 
@@ -69,6 +73,15 @@ alias ollama-status="systemctl --user status ollama.service"
 alias ollama-start="systemctl --user start ollama.service"
 alias ollama-stop="systemctl --user stop ollama.service"
 alias ollama-restart="systemctl --user restart ollama.service"
+
+alias ai="aichat"
+alias ais="aichat --session $PWD/.ai --save-session"
+alias ait='aichat --session $(mktemp -d)/ai'
+
+alias aishd="aichat --model ollama:$AI_MODEL_DUMB -e"
+alias aishm="aichat --model ollama:$AI_MODEL_MEDIUM -e"
+alias aishs="aichat --model ollama:$AI_MODEL_SMART -e"
+alias aish="aishm"
 
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)

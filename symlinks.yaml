@@ -33,3 +33,5 @@
 
 "~/.config/systemd/user/ollama.service": ollama.service
 
+"~/.config/aichat/config.yaml": aichat.yaml
+

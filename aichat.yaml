@@ -1,0 +1,12 @@
+model: ollama:qwen3:0.6b
+editor: nvim
+clients:
+- type: openai-compatible
+  name: ollama
+  api_base: http://localhost:11434/v1
+  api_key: ollama
+  models:
+  - name: gpt-oss:20b
+  - name: qwen3:0.6b
+  - name: qwen3:8b
+
