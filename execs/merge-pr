@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Check that inside git repo
+if [ "$(git rev-parse --is-inside-work-tree)" != "true" ]; then
+  echo "Not inside git repo; aborting"
+  exit 1
+fi
+
+# Check that git index is clean
+if [ "$(git status --porcelain)" != "" ]; then
+  echo "There is uncommitted changes; aborting"
+  git status --porcelain
+  exit 1
+fi
+
+BRANCH_TO="$(git rev-parse --abbrev-ref HEAD)"
+git pull
+gh pr checkout "$1"
+BRANCH_FROM="$(git rev-parse --abbrev-ref HEAD)"
+git checkout "$BRANCH_TO"
+git merge --signoff "$BRANCH_FROM"
+git push
+
