@@ -67,6 +67,8 @@ kitty
 man-db
 
 git
+github-cli
+
 iputils
 gping
 htop
@@ -149,6 +151,7 @@ xdg-desktop-portal-gtk
 docker
 docker-compose
 ducker
+docker-buildx
 
 distrobox
 dive
