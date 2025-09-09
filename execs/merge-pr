@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <pr-number-or-url>"
+  exit 2
+fi
+
+PR_REF="$1"
+
 # Check that inside git repo
 if [ "$(git rev-parse --is-inside-work-tree)" != "true" ]; then
   echo "Not inside git repo; aborting"
@@ -13,11 +20,32 @@ if [ "$(git status --porcelain)" != "" ]; then
   exit 1
 fi
 
+# remember current branch
 BRANCH_TO="$(git rev-parse --abbrev-ref HEAD)"
-git pull
-gh pr checkout "$1"
+
+git pull --ff-only
+
+# checkout the PR branch locally
+gh pr checkout "$PR_REF"
+
+# PR branch name as checked out
 BRANCH_FROM="$(git rev-parse --abbrev-ref HEAD)"
+
+# get PR metadata via gh
+PR_NUMBER="$(gh pr view "$PR_REF" --json number --jq '.number')"
+PR_TITLE="$(gh pr view "$PR_REF" --json title  --jq '.title')"
+
+# try to get the head repo owner (works for forks); fall back to blank if unavailable
+HEAD_OWNER="$(gh pr view "$PR_REF" --json headRepository --jq '.owner.login' 2>/dev/null || true)"
+[ -z "$HEAD_OWNER" ] && HEAD_OWNER="$(git config --get remote.origin.url | sed -n 's#.*[:/]\([^/]*\)/.*#\1#p' || true)"
+
+COMMIT_MSG="$(printf 'Merge pull request #%s from %s' "$PR_NUMBER" "$BRANCH_FROM")"
+
+# go back to the original branch and perform merge forcing a merge commit
 git checkout "$BRANCH_TO"
-git merge --signoff "$BRANCH_FROM"
+git merge --signoff --no-ff -m "$COMMIT_MSG" "$BRANCH_FROM"
+
+# push the merge commit
 git push
+
 
